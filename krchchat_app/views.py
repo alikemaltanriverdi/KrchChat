@@ -29,4 +29,4 @@ def register_request(request):
             return redirect("/")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = UserCreationForm()
-    return render(request=request, template_name="register.html", context={"register_form":form})
+    return render(request=request, template_name="register.html", context={"register_form": form})
