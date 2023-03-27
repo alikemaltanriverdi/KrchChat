@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 
+from krchchat_app import views
+
 urlpatterns = [
     path('', include('krchchat_app.urls')),
     path('admin/', admin.site.urls),
@@ -24,4 +26,5 @@ urlpatterns = [
     # login-section
     path('accounts/login/', LoginView.as_view(template_name='LoginPage.html'), name="login-user"),
     path("accounts/logout/", LogoutView.as_view(), name="logout-user"),
+    path("register", views.register_request, name="register")
 ]
