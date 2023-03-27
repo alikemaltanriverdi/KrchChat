@@ -17,6 +17,7 @@
     {% if user.is_authenticated %}
         <h1 style="text-align: end; padding-right: 10px">Logged in as : {{ user.username }}</h1>
         <input type="hidden" id="logged-in-user" value="{{ user.id }}">
+		<div class="btn btn-danger btn-sm pull-right" id="log-out">Log Out</div>
     {% endif %}
 		<div class="container-fluid h-100">
 			<div class="row justify-content-center h-100 ">
@@ -32,18 +33,18 @@
 					</div>
 					<div class="card-body contacts_body">
 						<ui class="contacts">
-                            {% for thread in Threads %}
-                                <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ thread.id }}" style="cursor: pointer">
+                            {% for conversation in Conversations %}
+                                <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
                                             <span class="online_icon"></span>
                                         </div>
                                         <div class="user_info">
-                                            {% if thread.first_person == user %}
-                                                <span>{{ thread.second_person.username }}</span>
+                                            {% if conversation.first_person == user %}
+                                                <span>{{ conversation.second_person.username }}</span>
                                             {% else %}
-                                                <span>{{ thread.first_person.username }}</span>
+                                                <span>{{ conversation.first_person.username }}</span>
                                             {% endif %}
 
 {#                                            <p>Kalid is online</p>#}
@@ -57,12 +58,12 @@
 				</div></div>
 				<div class="col-md-8 col-xl-6 chat h-100 mt-4">
 					<div class="card">
-                        {% for thread in Threads %}
-                            <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ thread.id }}" other-user-id="
-                                        {% if thread.first_person == user %}
-                                            {{ thread.second_person.id }}
+                        {% for conversation in Conversations %}
+                            <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
+                                        {% if conversation.first_person == user %}
+                                            {{ conversation.second_person.id }}
                                         {% else %}
-                                            {{ thread.first_person.id }}
+                                            {{ conversation.first_person.id }}
                                         {% endif %}
                                     ">
                                 <div class="card-header msg_head">
@@ -72,13 +73,13 @@
                                             <span class="online_icon"></span>
                                         </div>
                                         <div class="user_info">
-                                            {% if thread.first_person == user %}
-                                                    <span>Chat with {{ thread.second_person.username }}</span>
+                                            {% if conversation.first_person == user %}
+                                                    <span>Chat with {{ conversation.second_person.username }}</span>
                                             {% else %}
-                                                <span>Chat with {{ thread.first_person.username }}</span>
+                                                <span>Chat with {{ conversation.first_person.username }}</span>
                                             {% endif %}
 
-                                            <p>{{ thread.chatmessage_thread.all.count }} messages</p>
+                                            <p>{{ conversation.chatmessage_conversation.all.count }} messages</p>
                                         </div>
                                         <div class="video_cam">
                                             <span><i class="fas fa-video"></i></span>
@@ -98,7 +99,7 @@
 
                                 <div class="card-body msg_card_body">
                                     <!------- messages ------->
-                                    {% for chat in thread.chatmessage_thread.all %}
+                                    {% for chat in conversation.chatmessage_conversation.all %}
                                         {% if chat.user == user %}
                                             <div class="d-flex mb-4 replied">
                                                 <div class="msg_cotainer_send">
@@ -152,6 +153,8 @@
 		</div>
 
         <script src="{% static 'js/messages.js' %}"></script>
+		<script>
 
+		</script>
 	</body>
 </html>

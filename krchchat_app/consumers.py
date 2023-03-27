@@ -28,7 +28,7 @@ class ChatConsumer(AsyncConsumer):
         msg = received_data.get('message')
         sent_by_id = received_data.get('sent_by')
         send_to_id = received_data.get('send_to')
-        thread_id = received_data.get('thread_id')
+        conversation_id = received_data.get('conversation_id')
 
         if not msg:
             print('Error:: empty message')
@@ -36,22 +36,22 @@ class ChatConsumer(AsyncConsumer):
 
         sent_by_user = await self.get_user_object(sent_by_id)
         send_to_user = await self.get_user_object(send_to_id)
-        thread_obj = await self.get_thread(thread_id)
+        conversation_obj = await self.get_conversation(conversation_id)
         if not sent_by_user:
             print('Error:: sent by user is incorrect')
         if not send_to_user:
             print('Error:: send to user is incorrect')
-        if not thread_obj:
-            print('Error:: Thread id is incorrect')
+        if not conversation_obj:
+            print('Error:: conversation id is incorrect')
 
-        await self.create_chat_message(thread_obj, sent_by_user, msg)
+        await self.create_chat_message(conversation_obj, sent_by_user, msg)
 
         other_user_chat_room = f'user_chatroom_{send_to_id}'
         self_user = self.scope['user']
         response = {
             'message': msg,
             'sent_by': self_user.id,
-            'thread_id': thread_id
+            'conversation_id': conversation_id
         }
 
         await self.channel_layer.group_send(
@@ -92,8 +92,8 @@ class ChatConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def get_thread(self, thread_id):
-        qs = Conversation.objects.filter(id=thread_id)
+    def get_conversation(self, conversation_id):
+        qs = Conversation.objects.filter(id=conversation_id)
         if qs.exists():
             obj = qs.first()
         else:
@@ -101,5 +101,5 @@ class ChatConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def create_chat_message(self, thread, user, msg):
-        ChatMessage.objects.create(thread=thread, user=user, message=msg)
+    def create_chat_message(self, conversation, user, msg):
+        ChatMessage.objects.create(conversation=conversation, user=user, message=msg)

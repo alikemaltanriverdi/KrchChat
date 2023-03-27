@@ -12,6 +12,9 @@ if(loc.protocol === 'https') {
 let endpoint = wsStart + loc.host + loc.pathname
 
 var socket = new WebSocket(endpoint)
+$("#log-out").click(function() {
+  window.location = '/accounts/logout/'
+});
 
 socket.onopen = async function(e){
     console.log('open', e)
@@ -19,13 +22,13 @@ socket.onopen = async function(e){
         e.preventDefault()
         let message = input_message.val()
         let send_to = get_active_other_user_id()
-        let thread_id = get_active_thread_id()
+        let conversation_id = get_active_conversation_id()
 
         let data = {
             'message': message,
             'sent_by': USER_ID,
             'send_to': send_to,
-            'thread_id': thread_id
+            'conversation_id': conversation_id
         }
         data = JSON.stringify(data)
         socket.send(data)
@@ -38,8 +41,8 @@ socket.onmessage = async function(e){
     let data = JSON.parse(e.data)
     let message = data['message']
     let sent_by_id = data['sent_by']
-    let thread_id = data['thread_id']
-    newMessage(message, sent_by_id, thread_id)
+    let conversation_id = data['conversation_id']
+    newMessage(message, sent_by_id, conversation_id)
 }
 
 socket.onerror = async function(e){
@@ -51,12 +54,12 @@ socket.onclose = async function(e){
 }
 
 
-function newMessage(message, sent_by_id, thread_id) {
+function newMessage(message, sent_by_id, conversation_id) {
 	if ($.trim(message) === '') {
 		return false;
 	}
 	let message_element;
-	let chat_id = 'chat_' + thread_id
+	let chat_id = 'chat_' + conversation_id
 	if(sent_by_id == USER_ID){
 	    message_element = `
 			<div class="d-flex mb-4 replied">
@@ -111,8 +114,8 @@ function get_active_other_user_id(){
     return other_user_id
 }
 
-function get_active_thread_id(){
+function get_active_conversation_id(){
     let chat_id = $('.messages-wrapper.is_active').attr('chat-id')
-    let thread_id = chat_id.replace('chat_', '')
-    return thread_id
+    let conversation_id = chat_id.replace('chat_', '')
+    return conversation_id
 }

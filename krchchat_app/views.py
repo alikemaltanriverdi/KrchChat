@@ -10,7 +10,7 @@ def messages_page(request):
     if not request.user.is_authenticated:
         return redirect("login-user")
     
-    conversations = Conversation.objects.by_user(user=request.user).prefetch_related('chatmessage_thread').order_by('timestamp')
+    conversations = Conversation.objects.by_user(user=request.user).prefetch_related('chatmessage_conversation').order_by('timestamp')
     context = {
         'Conversations': conversations
     }
