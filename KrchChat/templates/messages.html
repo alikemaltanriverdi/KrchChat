@@ -8,22 +8,52 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
-
         <link rel="stylesheet" href="{% static 'css/messages.css' %}">
 
     </head>
-	<!--Coded With Love By Mutiullah Samim-->
+
 	<body>
     {% if user.is_authenticated %}
-        <h1 style="text-align: end; padding-right: 10px">Logged in as : {{ user.username }}</h1>
-        <input type="hidden" id="logged-in-user" value="{{ user.id }}">
+        <h1 class="pull-right">Logged in as : {{ user.username }}</h1>
 		<div class="btn btn-danger btn-sm pull-right" id="log-out">Log Out</div>
+        <input type="hidden" id="logged-in-user" value="{{ user.id }}">
     {% endif %}
 		<div class="container-fluid h-100">
 			<div class="row justify-content-center h-100 ">
-				<div class="col-md-4 col-xl-3 chat h-100 mt-4">
+			<div class="col-md-2 col-xl-2 chat h-100 mt-2">
                     <div class="card mb-sm-3 mb-md-0 contacts_card">
 					<div class="card-header">
+						<h1>Friends</h1>
+						<div class="input-group">
+							<input type="text" placeholder="Search Friends..." name="" class="form-control search">
+							<div class="input-group-prepend">
+								<span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="card-body contacts_body">
+						<ui class="friends">
+                            {% for friend in friends %}
+                                <li class="{% if forloop.first %}active{% endif %} friend-li" friend-id="user_{{ friend.id }}" style="cursor: pointer">
+                                    <div class="d-flex bd-highlight">
+                                        <div class="img_cont">
+                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                            <span class="online_icon"></span>
+                                        </div>
+                                        <div class="user_info">
+											<span>{{ friend.username}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+						</ui>
+					</div>
+					<div class="card-footer"></div>
+				</div></div>
+				<div class="col-md-2 col-xl-2 chat h-100 mt-2">
+                    <div class="card mb-sm-3 mb-md-0 contacts_card">
+					<div class="card-header">
+						<h1>Chats</h1>
 						<div class="input-group">
 							<input type="text" placeholder="Search..." name="" class="form-control search">
 							<div class="input-group-prepend">
@@ -33,7 +63,7 @@
 					</div>
 					<div class="card-body contacts_body">
 						<ui class="contacts">
-                            {% for conversation in Conversations %}
+                            {% for conversation in conversations %}
                                 <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
@@ -47,7 +77,6 @@
                                                 <span>{{ conversation.first_person.username }}</span>
                                             {% endif %}
 
-{#                                            <p>Kalid is online</p>#}
                                         </div>
                                     </div>
                                 </li>
@@ -58,7 +87,7 @@
 				</div></div>
 				<div class="col-md-8 col-xl-6 chat h-100 mt-4">
 					<div class="card">
-                        {% for conversation in Conversations %}
+                        {% for conversation in conversations %}
                             <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
                                         {% if conversation.first_person == user %}
                                             {{ conversation.second_person.id }}
@@ -78,12 +107,7 @@
                                             {% else %}
                                                 <span>Chat with {{ conversation.first_person.username }}</span>
                                             {% endif %}
-
                                             <p>{{ conversation.chatmessage_conversation.all.count }} messages</p>
-                                        </div>
-                                        <div class="video_cam">
-                                            <span><i class="fas fa-video"></i></span>
-                                            <span><i class="fas fa-phone"></i></span>
                                         </div>
                                     </div>
                                     <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>

@@ -13,6 +13,10 @@ import os
 import sys
 import os.path
 from pathlib import Path
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -25,7 +29,7 @@ LOGOUT_REDIRECT_URL = "/"
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-grsn1cv#$6ff@7jm7elq#e)g-x&j!8sio82g^18w21l77hm7nd'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,11 +89,20 @@ TEMPLATES = [
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
+# import mongoengine
+# mongoengine.connect(db=DATABASE_NAME, host=DATABASE_HOST, username=USERNAME, password=PASSWORD)
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASS'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': '5433',
     }
 }
 
@@ -143,7 +156,7 @@ CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
+                "hosts": [(env("REDIS_HOST"), 6379)],
             },
         },
     }

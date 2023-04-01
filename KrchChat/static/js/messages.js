@@ -17,12 +17,16 @@ $("#log-out").click(function() {
 });
 
 socket.onopen = async function(e){
-    console.log('open', e)
+    // console.log('open', e)
     send_message_form.on('submit', function (e){
         e.preventDefault()
         let message = input_message.val()
         let send_to = get_active_other_user_id()
         let conversation_id = get_active_conversation_id()
+        if (!conversation_id){
+
+        }
+
 
         let data = {
             'message': message,
@@ -37,7 +41,7 @@ socket.onopen = async function(e){
 }
 
 socket.onmessage = async function(e){
-    console.log('message', e)
+    // console.log('message', e)
     let data = JSON.parse(e.data)
     let message = data['message']
     let sent_by_id = data['sent_by']
@@ -91,21 +95,30 @@ function newMessage(message, sent_by_id, conversation_id) {
     let message_body = $('.messages-wrapper[chat-id="' + chat_id + '"] .msg_card_body')
 	message_body.append($(message_element))
     message_body.animate({
-        scrollTop: $(document).height()
-    }, 100);
+        scrollToBottom: $(document).height()
+    }, 50);
 	input_message.val(null);
 }
 
 
 $('.contact-li').on('click', function (){
-    $('.contacts .actiive').removeClass('active')
+    $('.contacts .active').removeClass('active')
     $(this).addClass('active')
 
     // message wrappers
     let chat_id = $(this).attr('chat-id')
     $('.messages-wrapper.is_active').removeClass('is_active')
     $('.messages-wrapper[chat-id="' + chat_id +'"]').addClass('is_active')
+})
 
+$('.friend-li').on('click', function (){
+    $('.friends .active').removeClass('active')
+    $(this).addClass('active')
+
+    // message wrappers
+    let friend_id = $(this).attr('friend-id')
+    $('.messages-wrapper.is_active').removeClass('is_active')
+    $('.messages-wrapper[friend-id="' + friend_id +'"]').addClass('is_active')
 })
 
 function get_active_other_user_id(){

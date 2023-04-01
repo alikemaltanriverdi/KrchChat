@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 # Create your views here.
-from krchchat_app.models import Conversation
+from krchchat_app.models import Conversation, User
 
 
 @login_required
@@ -13,8 +13,10 @@ def messages_page(request):
         return redirect("login-user")
     
     conversations = Conversation.objects.by_user(user=request.user).prefetch_related('chatmessage_conversation').order_by('timestamp')
+    friends = User.objects.prefetch_related('conversation_second_person').exclude(username=request.user.username).all()
     context = {
-        'Conversations': conversations
+        'conversations': conversations,
+        'friends': friends
     }
     return render(request, 'messages.html', context)
 
