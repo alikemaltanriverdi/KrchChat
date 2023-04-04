@@ -6,6 +6,11 @@ from django.contrib import messages
 # Create your views here.
 from krchchat_app.models import Conversation, User
 
+from django.http import HttpResponse
+
+
+def health_check(request):
+    return HttpResponse(status=200)
 
 @login_required
 def messages_page(request):
