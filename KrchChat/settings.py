@@ -14,9 +14,29 @@ import sys
 import os.path
 from pathlib import Path
 import environ
+import ast
+import subprocess
+
+
+def get_environ_vars():  # This is because the environment variables are set in this path in elasticbeanstalk
+    # This method returns a dictionary of key value pairs
+    completed_process = subprocess.run(
+        ['/opt/elasticbeanstalk/bin/get-config', 'environment'],
+        stdout=subprocess.PIPE,
+        text=True,
+        check=True
+    )
+    
+    return ast.literal_eval(completed_process.stdout)
+
+
+# ENV_VARS = None
+
+
+env = get_environ_vars()
 # Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
