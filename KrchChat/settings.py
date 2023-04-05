@@ -42,7 +42,7 @@ LOGOUT_REDIRECT_URL = "/"
 envs = environ.Env()
 envs.read_env()
 env = {}
-if envs("SECRET_KEY"):
+try:
     env = {
         "SECRET_KEY": envs("SECRET_KEY"),
         'DATABASE_NAME': envs('DATABASE_NAME'),
@@ -52,7 +52,7 @@ if envs("SECRET_KEY"):
         'DATABASE_PORT': envs('DATABASE_PORT'),
         'REDIS_HOST': envs("REDIS_HOST")
     }
-else:
+except:
     env = get_environ_vars()
 
 # Quick-start development settings - unsuitable for production
