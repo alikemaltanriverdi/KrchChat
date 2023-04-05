@@ -30,13 +30,7 @@ def get_environ_vars():  # This is because the environment variables are set in 
     return ast.literal_eval(completed_process.stdout)
 
 
-# ENV_VARS = None
 
-
-env = get_environ_vars()
-# Initialise environment variables
-# env = environ.Env()
-# environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -44,6 +38,22 @@ BASE_DIR = Path(__file__).resolve().parent
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Initialise environment variables
+envs = environ.Env()
+envs.read_env()
+env = {}
+if envs("SECRET_KEY"):
+    env = {
+        "SECRET_KEY": envs("SECRET_KEY"),
+        'DATABASE_NAME': envs('DATABASE_NAME'),
+        'DATABASE_USER': envs('DATABASE_USER'),
+        'DATABASE_PASS': envs('DATABASE_PASS'),
+        'DATABASE_HOST': envs('DATABASE_HOST'),
+        'DATABASE_PORT': envs('DATABASE_PORT'),
+        'REDIS_HOST': envs("REDIS_HOST")
+    }
+else:
+    env = get_environ_vars()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -117,7 +127,7 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': env['DATABASE_NAME'],
         'USER': env['DATABASE_USER'],
         'PASSWORD': env['DATABASE_PASS'],
