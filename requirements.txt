@@ -79,6 +79,7 @@ pickleshare==0.7.5
 Pillow==9.2.0
 pipreqs==0.4.11
 prometheus-client==0.14.1
+psycopg2-binary==2.8.4
 prompt-toolkit==3.0.20
 ptyprocess==0.7.0
 pyasn1==0.4.8
