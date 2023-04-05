@@ -21,7 +21,7 @@ from krchchat_app import views
 
 urlpatterns = [
     #AWS Health Check
-    path('health/', views.health_check),
+    path('health', views.health_check),
     path('', include('krchchat_app.urls')),
     path('admin/', admin.site.urls),
     path('chat/', include('krchchat_app.urls')),
