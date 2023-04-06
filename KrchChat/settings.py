@@ -50,7 +50,11 @@ try:
         'DATABASE_PASS': envs('DATABASE_PASS'),
         'DATABASE_HOST': envs('DATABASE_HOST'),
         'DATABASE_PORT': envs('DATABASE_PORT'),
-        'REDIS_HOST': envs("REDIS_HOST")
+        'REDIS_HOST': envs("REDIS_HOST"),
+        'AWS_ACCESS_KEY_ID': envs("AWS_ACCESS_KEY_ID"),
+        'AWS_SECRET_ACCESS_KEY': envs("AWS_SECRET_ACCESS_KEY"),
+        'AWS_STORAGE_BUCKET_NAME': envs("AWS_STORAGE_BUCKET_NAME"),
+        'AWS_S3_Region': envs("AWS_S3_Region")
     }
 except:
     env = get_environ_vars()
@@ -80,7 +84,8 @@ INSTALLED_APPS = [
     'krchchat_app',
     'channels',
     'crispy_forms',
-    'crispy_bootstrap4'
+    'crispy_bootstrap4',
+    'storages'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -174,7 +179,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/')
@@ -192,3 +197,14 @@ CHANNEL_LAYERS = {
             },
         },
     }
+
+AWS_ACCESS_KEY_ID = env['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = env['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = env['AWS_STORAGE_BUCKET_NAME']
+
+AWS_S3_REGION_NAME = env['AWS_S3_Region']
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_DEFAULT_ACL = 'public-read'
+DEFAULT_FILE_STORAGE = 'KrchChat.storage.MediaStore'
