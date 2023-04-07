@@ -1,1 +1,1 @@
-web: daphne myproject.asgi:application --port 8001
+web: daphne KrchChat.asgi:application --port 8001
