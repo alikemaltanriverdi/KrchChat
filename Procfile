@@ -1,0 +1,1 @@
+web: daphne KrchChat.asgi:application --port 5000

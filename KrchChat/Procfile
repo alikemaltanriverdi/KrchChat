@@ -1,1 +1,0 @@
-web: daphne KrchChat.asgi:application --port 8001
