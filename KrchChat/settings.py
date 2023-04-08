@@ -16,6 +16,9 @@ from pathlib import Path
 import environ
 import ast
 import subprocess
+from KrchChat import get_eb_env
+
+get_eb_env.patch_environment()
 
 
 def get_environ_vars():  # This is because the environment variables are set in this path in elasticbeanstalk
