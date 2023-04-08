@@ -13,7 +13,7 @@ boto3==1.20.26
 botocore==1.23.54
 certifi==2022.12.7
 cffi==1.15.1
-channels==4.0.0
+channels==3.0.5
 channels-redis==4.0.0
 charset-normalizer==3.1.0
 commonmark==0.9.1
@@ -33,6 +33,7 @@ django-bootstrap4==22.3
 django-crispy-forms==2.0
 django-dotenv==1.4.2
 django-environ==0.10.0
+django-extensions==3.2.1
 django-rest-framework==0.1.0
 django-storages==1.12.3
 django-widget-tweaks==1.4.12
@@ -42,6 +43,7 @@ docopt==0.6.2
 entrypoints==0.3
 fastjsonschema==2.16.1
 fonttools==4.37.4
+gunicorn==20.1.0
 hyperlink==21.0.0
 idna==3.4
 importlib-metadata==4.12.0
@@ -109,6 +111,7 @@ service-identity==21.1.0
 six==1.16.0
 soupsieve==2.3.2.post1
 sqlparse==0.4.3
+supervisor==4.2.5
 terminado==0.15.0
 tinycss2==1.1.1
 tornado==6.1
@@ -124,5 +127,3 @@ wrapt==1.14.1
 yarg==0.1.9
 zipp==3.8.1
 zope.interface==5.5.0
-gunicorn==20.0.4
-supervisor==4.2.2

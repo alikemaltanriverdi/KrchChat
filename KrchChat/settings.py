@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'krchchat_app',
     'channels',
     'crispy_forms',
+    'django_extensions',
     'crispy_bootstrap4',
     'storages'
 ]
