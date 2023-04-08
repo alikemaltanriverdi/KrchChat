@@ -13,7 +13,7 @@ boto3==1.20.26
 botocore==1.23.54
 certifi==2022.12.7
 cffi==1.15.1
-channels==3.0.5
+channels~=4.0.0
 channels-redis==4.0.0
 charset-normalizer==3.1.0
 commonmark==0.9.1
@@ -28,7 +28,7 @@ debugpy==1.4.3
 decorator==5.1.0
 defusedxml==0.7.1
 Deprecated==1.2.13
-Django==4.1.2
+Django~=4.1.7
 django-bootstrap4==22.3
 django-crispy-forms==2.0
 django-dotenv==1.4.2
@@ -127,3 +127,4 @@ wrapt==1.14.1
 yarg==0.1.9
 zipp==3.8.1
 zope.interface==5.5.0
+deepgram-sdk==2.3.0

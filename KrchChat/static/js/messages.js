@@ -9,24 +9,25 @@ let wsStart = 'ws://'
 if(loc.protocol === 'https') {
     wsStart = 'wss://'
 }
-let endpoint = wsStart + loc.host + loc.pathname
+let chatEndpoint = wsStart + loc.host + loc.pathname
 
-var socket = new WebSocket(endpoint)
+var chatSocket = new WebSocket(chatEndpoint)
+var speechSocket = new WebSocket('ws://localhost:8000/listen')
 $("#log-out").click(function() {
   window.location = '/accounts/logout/'
 });
 
-socket.onopen = async function(e){
+chatSocket.onopen = async function(e){
     // console.log('open', e)
     send_message_form.on('submit', function (e){
         e.preventDefault()
         let message = input_message.val()
+        console.log('message', message)
         let send_to = get_active_other_user_id()
         let conversation_id = get_active_conversation_id()
         if (!conversation_id){
 
         }
-
 
         let data = {
             'message': message,
@@ -35,12 +36,12 @@ socket.onopen = async function(e){
             'conversation_id': conversation_id
         }
         data = JSON.stringify(data)
-        socket.send(data)
+        chatSocket.send(data)
         $(this)[0].reset()
     })
 }
 
-socket.onmessage = async function(e){
+chatSocket.onmessage = async function(e){
     // console.log('message', e)
     let data = JSON.parse(e.data)
     let message = data['message']
@@ -49,11 +50,11 @@ socket.onmessage = async function(e){
     newMessage(message, sent_by_id, conversation_id)
 }
 
-socket.onerror = async function(e){
+chatSocket.onerror = async function(e){
     console.log('error', e)
 }
 
-socket.onclose = async function(e){
+chatSocket.onclose = async function(e){
     console.log('close', e)
 }
 
@@ -131,4 +132,48 @@ function get_active_conversation_id(){
     let chat_id = $('.messages-wrapper.is_active').attr('chat-id')
     let conversation_id = chat_id.replace('chat_', '')
     return conversation_id
+}
+
+/* Speech to text handling */
+let recording = false;
+var mediaRecorder;
+function captureUserMedia(successCallback, errorCallback) {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(successCallback).catch(errorCallback);
+}
+function onMediaSuccess(stream) {
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.stream = stream;
+    mediaRecorder.addEventListener('dataavailable', async (event) => {
+        if (event.data.size > 0 && speechSocket.readyState == 1) {
+            speechSocket.send(event.data)
+        }
+    })
+    mediaRecorder.start(250)
+}
+function onMediaError(e) {
+    console.error('media error', e);
+}
+document.querySelector("#speech_to_text").onclick = function (e) {
+    if (recording === false)
+    {
+        document.getElementById("speech_text_icon").className = 'fas fa-stop'
+        document.querySelector('#input-message').value = ""
+        captureUserMedia(onMediaSuccess, onMediaError);
+        recording = true;
+    } else {
+    document.getElementById("speech_text_icon").className = 'fas fa-microphone'
+        mediaRecorder.stop()
+        mediaRecorder.stream.getAudioTracks().forEach(function(track) {
+            track.stop();
+        });
+        recording = false;
+    }
+};
+
+speechSocket.onmessage = (message) => {
+    const received = message.data
+    if (received) {
+        console.log(received)
+        document.querySelector('#input-message').value += received
+    }
 }

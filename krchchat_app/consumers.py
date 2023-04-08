@@ -2,7 +2,10 @@ import json
 from channels.consumer import AsyncConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
-
+from deepgram import Deepgram
+from typing import Dict
+from channels.generic.websocket import AsyncWebsocketConsumer
+import environ
 from krchchat_app.models import Conversation, ChatMessage
 
 User = get_user_model()
@@ -108,4 +111,45 @@ class ChatConsumer(AsyncConsumer):
     def create_conversation(self, sender_id, receiver_id):
         Conversation.objects.create(first_person_id=sender_id, second_person_id=receiver_id)
         
-        
+
+class TranscriptConsumer(AsyncWebsocketConsumer):
+    envs = environ.Env()
+    envs.read_env()
+    api_key = envs("DEEPGRAM_API_KEY")
+    dg_client = Deepgram(api_key)
+    num_xfer_debug = 0
+
+    async def get_transcript(self, data: Dict) -> None:
+        if 'channel' in data:
+            transcript = data['channel']['alternatives'][0]['transcript']
+            if transcript:
+                await self.send(transcript)
+
+    async def connect_to_deepgram(self):
+        try:
+            self.socket = await self.dg_client.transcription.live({'punctuate': True, 'interim_results': False})
+            self.socket.registerHandler(self.socket.event.CLOSE, lambda c: print(f'Connection closed with code {c}.'))
+            self.socket.registerHandler(self.socket.event.TRANSCRIPT_RECEIVED, self.get_transcript)
+
+        except Exception as e:
+            raise Exception(f'Could not open socket: {e}')
+
+    async def connect(self):
+        await self.connect_to_deepgram()
+        await self.accept()
+        self.room_group_name = "group_chat_gfg"
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+           self.room_group_name,
+           self.channel_name
+        )
+
+    async def receive(self, bytes_data):
+        #print(f"Got media data: {self.num_xfer_debug}")
+        self.num_xfer_debug += 1
+        self.socket.send(bytes_data)
