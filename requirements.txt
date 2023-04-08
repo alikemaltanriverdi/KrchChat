@@ -9,12 +9,12 @@ Automat==20.2.0
 backcall==0.2.0
 beautifulsoup4==4.11.1
 bleach==5.0.1
+boto3==1.20.26
+botocore==1.23.54
 certifi==2022.12.7
 cffi==1.15.1
-channels==4.0.0
+channels==3.0.5
 channels-redis==4.0.0
-boto3==1.20.26
-django-storages==1.12.3
 charset-normalizer==3.1.0
 commonmark==0.9.1
 constantly==15.1.0
@@ -34,6 +34,7 @@ django-crispy-forms==2.0
 django-dotenv==1.4.2
 django-environ==0.10.0
 django-rest-framework==0.1.0
+django-storages==1.12.3
 django-widget-tweaks==1.4.12
 djangorestframework==3.14.0
 dnspython==2.3.0
@@ -51,6 +52,7 @@ ipython-genutils==0.2.0
 ipywidgets==8.0.2
 jedi==0.18.0
 Jinja2==3.1.2
+jmespath==0.10.0
 jsonschema==4.15.0
 jupyter==1.0.0
 jupyter-client==7.0.5
@@ -100,6 +102,7 @@ QtPy==2.2.0
 redis==4.3.4
 requests==2.28.2
 rich==12.6.0
+s3transfer==0.5.2
 scipy==1.9.1
 Send2Trash==1.8.0
 service-identity==21.1.0
@@ -121,3 +124,5 @@ wrapt==1.14.1
 yarg==0.1.9
 zipp==3.8.1
 zope.interface==5.5.0
+gunicorn==20.0.4
+supervisor==4.2.2
