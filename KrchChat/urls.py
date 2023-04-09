@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 
 from krchchat_app import views
 
@@ -29,4 +31,5 @@ urlpatterns = [
     path('accounts/login/', LoginView.as_view(template_name='LoginPage.html'), name="login-user"),
     path("accounts/logout/", LogoutView.as_view(), name="logout-user"),
     path("register", views.register_request, name="register")
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

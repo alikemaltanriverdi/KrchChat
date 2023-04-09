@@ -4,15 +4,17 @@ let send_message_form = $('#send-message-form')
 const USER_ID = $('#logged-in-user').val()
 
 let loc = window.location
-let wsStart = 'ws://'
-
-if(loc.protocol === 'https') {
+// let wsStart = 'ws://'
+if(loc.protocol === 'http:') {
+    wsStart = 'ws://'
+}
+if(loc.protocol === 'https:') {
     wsStart = 'wss://'
 }
-let chatEndpoint = wsStart + loc.host + loc.pathname
+let initialURL = wsStart + loc.host
 
-var chatSocket = new WebSocket(chatEndpoint)
-var speechSocket = new WebSocket('ws://localhost:8000/listen')
+var chatSocket = new WebSocket(initialURL + "/ws/")
+var speechSocket = new WebSocket(initialURL+'/listen')
 $("#log-out").click(function() {
   window.location = '/accounts/logout/'
 });
