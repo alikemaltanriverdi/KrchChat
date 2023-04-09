@@ -14,7 +14,7 @@ if(loc.protocol === 'https:') {
 let initialURL = wsStart + loc.host
 
 var chatSocket = new WebSocket(initialURL + "/ws/")
-var speechSocket = new WebSocket(initialURL+'/listen')
+var speechSocket = new WebSocket(initialURL+'/ws/listen')
 $("#log-out").click(function() {
   window.location = '/accounts/logout/'
 });
