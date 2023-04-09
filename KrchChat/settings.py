@@ -9,31 +9,14 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os
-import sys
+
 import os.path
 from pathlib import Path
 import environ
-import ast
-import subprocess
+
 from KrchChat import get_eb_env
 
 get_eb_env.patch_environment()
-
-
-def get_environ_vars():  # This is because the environment variables are set in this path in elasticbeanstalk
-    # This method returns a dictionary of key value pairs
-    completed_process = subprocess.run(
-        ['/opt/elasticbeanstalk/bin/get-config', 'environment'],
-        stdout=subprocess.PIPE,
-        text=True,
-        check=True
-    )
-    
-    return ast.literal_eval(completed_process.stdout)
-
-
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,37 +25,16 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Initialise environment variables
-envs = environ.Env()
-envs.read_env()
-env = {}
-try:
-    env = {
-        "SECRET_KEY": envs("SECRET_KEY"),
-        'DATABASE_NAME': envs('DATABASE_NAME'),
-        'DATABASE_USER': envs('DATABASE_USER'),
-        'DATABASE_PASS': envs('DATABASE_PASS'),
-        'DATABASE_HOST': envs('DATABASE_HOST'),
-        'DATABASE_PORT': envs('DATABASE_PORT'),
-        'REDIS_HOST': envs("REDIS_HOST"),
-        'AWS_ACCESS_KEY_ID': envs("AWS_ACCESS_KEY_ID"),
-        'AWS_SECRET_ACCESS_KEY': envs("AWS_SECRET_ACCESS_KEY"),
-        'AWS_STORAGE_BUCKET_NAME': envs("AWS_STORAGE_BUCKET_NAME"),
-        'AWS_S3_Region': envs("AWS_S3_Region"),
-        'DEBUG': envs("DEBUG")
-    }
-except:
-    env = get_environ_vars()
+env = environ.Env()
+env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env['SECRET_KEY']
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env['DEBUG'] == 'True'
-
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = env('SECRET_KEY')
+print(env("APP_HOST"))
+ALLOWED_HOSTS = [env("APP_HOST")]
 
 
 # Application definition
@@ -125,25 +87,17 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'KrchChat.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-# import mongoengine
-# mongoengine.connect(db=DATABASE_NAME, host=DATABASE_HOST, username=USERNAME, password=PASSWORD)
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+    
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env['DATABASE_NAME'],
-        'USER': env['DATABASE_USER'],
-        'PASSWORD': env['DATABASE_PASS'],
-        'HOST': env['DATABASE_HOST'],
-        'PORT': env['DATABASE_PORT'],
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASS'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT'),
     }
 }
 
@@ -196,16 +150,38 @@ CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [(env["REDIS_HOST"], 6379)],
+                "hosts": [(env("REDIS_HOST"), 6379)],
             },
         },
     }
 
-AWS_ACCESS_KEY_ID = env['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = env['AWS_SECRET_ACCESS_KEY']
-AWS_STORAGE_BUCKET_NAME = env['AWS_STORAGE_BUCKET_NAME']
+DEBUG = True
 
-AWS_S3_REGION_NAME = env['AWS_S3_Region']
+if env("ENVIRONMENT") == "prod":
+    DEBUG = False
+    # security.W016
+    CSRF_COOKIE_SECURE = True
+
+    # security.W012
+    SESSION_COOKIE_SECURE = True
+
+    # security.W008
+    SECURE_SSL_REDIRECT = True
+
+    # security.W004
+    SECURE_HSTS_SECONDS = 31536000 # One year in seconds
+
+    # Another security settings
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# AWS S3 Settings
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+
+AWS_S3_REGION_NAME = env('AWS_S3_Region')
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
