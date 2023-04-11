@@ -1,3 +1,5 @@
+
+jQuery(document).ready(function($){
 let loc = window.location
 // let wsStart = 'ws://'
 if(loc.protocol === 'http:') {
@@ -10,11 +12,11 @@ let initialURL = wsStart + loc.host + "/ws/"
 
 var chatSocket = new WebSocket(initialURL + "chat")
 var speechSocket = new WebSocket(initialURL+'listen')
-jQuery(document).ready(function($){
+
 let input_message = $('#input-message')
 let message_body = $('.msg_card_body')
 let send_message_form = $('#send-message-form')
-const USER_ID = $('#logged-in-user').val()
+const USER_ID =$('#logged-in-user').val()
 
 
 $("#log-out").click(function() {
@@ -31,35 +33,37 @@ chatSocket.onopen = async function(e){
         let send_to = get_active_other_user_id()
       
         let conversation_id = get_active_conversation_id()
+
+        if (conversation_id){
+            let data = {
+                'message': message,
+                'sent_by': USER_ID,
+                'send_to': send_to,
+                'conversation_id': conversation_id
+            }
+            debugger;
+            data = JSON.stringify(data)
     
-        if (!conversation_id){
-         
+            chatSocket.send(data)
+            
+            $(this)[0].reset()
         }
 
-        let data = {
-            'message': message,
-            'sent_by': USER_ID,
-            'send_to': send_to,
-            'conversation_id': conversation_id
-        }
-        data = JSON.stringify(data)
-
-        chatSocket.send(data)
-        
-        $(this)[0].reset()
+       
 
     })
 }
 
 chatSocket.onmessage = async function(e){
     // console.log('message', e)
-    debugger
+ 
     let data = JSON.parse(e.data)
     let message = data['message']
     let sent_by_id = data['sent_by']
     let conversation_id = data['conversation_id']
-    debugger
+   
     newMessage(message, sent_by_id, conversation_id)
+ 
 }
 
 chatSocket.onerror = async function(e){
@@ -86,7 +90,8 @@ function newMessage(message, sent_by_id, conversation_id) {
 					<span class="msg_time_send">8:55 AM, Today</span>
 				</div>
                
-				<div class="img_cont_msg"> <i class="bi-person-fill-add"></i>
+				<div class="img_cont_msg"> 
+                <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
 					
 				</div>
 			</div>
@@ -96,7 +101,7 @@ function newMessage(message, sent_by_id, conversation_id) {
 	    message_element = `
            <div class="d-flex mb-4 received">
               <div class="img_cont_msg">
-                 <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
+                 <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
               </div>
               <div class="msg_cotainer">
                  ${message}

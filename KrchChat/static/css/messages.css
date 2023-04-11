@@ -12,9 +12,13 @@ html {
   margin-bottom: auto;
 }
 .card {
-  height: 90%;
+  
   border-radius: 15px !important;
   background-color: rgba(0, 0, 0, 0.4) !important;
+  overflow: auto!important;
+  display: flex!important;
+  height: 600px!important;
+  flex-direction: column-reverse!important;
 }
 .contacts_body {
   padding: 0.75rem 0 !important;
