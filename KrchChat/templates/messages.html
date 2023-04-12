@@ -34,17 +34,21 @@
 					<div class="card-body contacts_body">
 						<ui class="friends">
                             {% for friend in friends %}
-                                <li class="{% if forloop.first %}active{% endif %} friend-li" friend-id="user_{{ friend.id }}" style="cursor: pointer">
-                                    <div class="d-flex bd-highlight">
-                                        <div class="img_cont">
-                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
+                                <form name="friend-form" method="post">
+                                {% csrf_token %}
+                                    <input name="friend" value="{{friend.id}}" type="hidden">
+                                    <li name="friendbox" class="friend-li" friend-id="user_{{ friend.id }}" style="cursor: pointer">
+                                        <div class="d-flex bd-highlight">
+                                            <div class="img_cont">
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+                                                <span class="online_icon"></span>
+                                            </div>
+                                            <div class="user_info">
+    											<span>{{ friend.username}}</span>
+                                            </div>
                                         </div>
-                                        <div class="user_info">
-											<span>{{ friend.username}}</span>
-                                        </div>
-                                    </div>
-                                </li>
+                                    </li>
+                                </form>
                             {% endfor %}
 						</ui>
 					</div>
@@ -64,7 +68,7 @@
 					<div class="card-body contacts_body">
 						<ui class="contacts">
                             {% for conversation in conversations %}
-                                <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
+                                <li class="{% if conversationId == conversation.id %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
@@ -88,7 +92,7 @@
 				<div class="col-md-8 col-xl-6 chat h-100 mt-4">
 					<div class="card">
                         {% for conversation in conversations %}
-                            <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
+                            <div class="messages-wrapper  {% if conversationId == conversation.id %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
                                         {% if conversation.first_person == user %}
                                             {{ conversation.second_person.id }}
                                         {% else %}
@@ -181,8 +185,6 @@
 		</div>
 
         <script src="{% static 'js/messages.js' %}"></script>
-		<script>
-
-		</script>
+        <script src="{% static 'js/conversations.js' %}"></script>
 	</body>
 </html>
