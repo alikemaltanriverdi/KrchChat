@@ -9,12 +9,13 @@ from django.db.models import Q
 import traceback
 
 from django.http import HttpResponse
-
+from django.views.decorators.csrf import csrf_exempt
 
 def health_check(request):
     return HttpResponse(status=200)
 
 @login_required
+@csrf_exempt
 def messages_page(request):
     if not request.user.is_authenticated:
         return redirect("login-user")
@@ -40,6 +41,29 @@ def messages_page(request):
     }
     return render(request, 'messages.html', context)
 
+@login_required
+@csrf_exempt
+def handleFriendClick(request):
+    conversationId = -1
+
+    if request.method == "POST":
+        data = dict(request.POST)
+        # print(data)
+        friend_id = int(data['friend'][0])
+        # print("friend = " + str(friend_id))
+        conversationId = getConversationId(request.user.id, friend_id)
+        if conversationId == -1:
+            conversationId = createConversation(request.user.id, friend_id)
+
+
+    conversations = Conversation.objects.by_user(user=request.user).prefetch_related('chatmessage_conversation').order_by('timestamp')
+    friends = User.objects.prefetch_related('conversation_second_person').exclude(username=request.user.username).all()
+    context = {
+        'conversations': conversations,
+        'friends': friends,
+        'conversationId': conversationId
+    }
+    return render(request, 'body.html', context);
 
 def register_request(request):
     if request.method == "POST":
