@@ -20,6 +20,8 @@ $("#log-out").click(function() {
   window.location = '/accounts/logout/'
 });
 
+var is_typing = 0
+
 chatSocket.onopen = async function(e){
     // console.log('open', e)
     send_message_form.on('submit', function (e){
@@ -41,16 +43,79 @@ chatSocket.onopen = async function(e){
         data = JSON.stringify(data)
         chatSocket.send(data)
         $(this)[0].reset()
+        is_typing = 0
+    })
+    send_message_form.on('input', function (e){
+        if (is_typing === 0) {
+            e.preventDefault()
+            console.log('typing started')
+            let send_to = get_active_other_user_id()
+            let conversation_id = get_active_conversation_id()
+
+            let data = {
+                'typing': 1,
+                'sent_by': USER_ID,
+                'send_to': send_to,
+                'conversation_id': conversation_id
+            }
+            data = JSON.stringify(data)
+            chatSocket.send(data)
+            is_typing = 1
+        } else {
+            if (input_message.val() == "") {
+                e.preventDefault()
+                console.log('typing stopped')
+                let send_to = get_active_other_user_id()
+                let conversation_id = get_active_conversation_id()
+
+                let data = {
+                    'typing': 0,
+                    'sent_by': USER_ID,
+                    'send_to': send_to,
+                    'conversation_id': conversation_id
+                }
+                data = JSON.stringify(data)
+                chatSocket.send(data)
+                is_typing = 0
+            }
+        }
     })
 }
 
 chatSocket.onmessage = async function(e){
-    // console.log('message', e)
+    console.log('message', e)
     let data = JSON.parse(e.data)
-    let message = data['message']
-    let sent_by_id = data['sent_by']
-    let conversation_id = data['conversation_id']
-    newMessage(message, sent_by_id, conversation_id)
+    console.log(data)
+
+    let conv_idx = data['conversation_id']
+
+    if (data.hasOwnProperty('typing') && data['typing'] == 1 && data['sent_by'] != USER_ID) {
+        updateTypingStatus(data['sent_by'], conv_idx, 1)
+    } else if (data.hasOwnProperty('typing') && data['typing'] == 0 && data['sent_by'] != USER_ID) {
+        //document.querySelector('#typing_status').textContent = "No one is typing"
+        updateTypingStatus(data['sent_by'], conv_idx, 0)
+    } else if (!data.hasOwnProperty('typing')) {
+        let message = data['message']
+        let sent_by_id = data['sent_by']
+        let conversation_id = data['conversation_id']
+        if (data['sent_by'] != USER_ID) {
+            updateTypingStatus(data['sent_by'], conv_idx, 0)
+        }
+        newMessage(message, sent_by_id, conversation_id)
+    }
+}
+
+function updateTypingStatus(user, conversation_id, is_typing) {
+    typing_status_span = $('.messages-wrapper[chat-id="chat_' + conversation_id + '"] .typing_status')
+    friend_name_elem = $('.messages-wrapper[chat-id="chat_' + conversation_id + '"] .msg_head .bd-highlight .user_info')[0]
+    friend_name_parts = friend_name_elem.innerText.split("\n")[0]
+    friend_name = friend_name_parts.split(" ")[2]
+
+    if (is_typing == 1) {
+        typing_status_span[0].textContent = friend_name + " is typing..."
+    } else {
+        typing_status_span[0].textContent = ""
+    }
 }
 
 chatSocket.onerror = async function(e){
@@ -104,8 +169,14 @@ function newMessage(message, sent_by_id, conversation_id) {
 	input_message.val(null);
 }
 
-
+var input_form_map = new Map();
 $('.contact-li').on('click', function (){
+    // Handle saving of text field
+    let old_chat_id = "chat_" + get_active_conversation_id()
+    if (input_message.val() != "") {
+        input_form_map.set(old_chat_id, input_message.val())
+    }
+
     $('.contacts .active').removeClass('active')
     $(this).addClass('active')
 
@@ -113,6 +184,13 @@ $('.contact-li').on('click', function (){
     let chat_id = $(this).attr('chat-id')
     $('.messages-wrapper.is_active').removeClass('is_active')
     $('.messages-wrapper[chat-id="' + chat_id +'"]').addClass('is_active')
+
+    // Handle loading of text field
+    if (input_form_map.get(chat_id) !== undefined) {
+        document.querySelector('#input-message').value = input_form_map.get(chat_id)
+    } else {
+        document.querySelector('#input-message').value = "" // FIXME RK make this the type a message
+    }
 })
 
 $('.friend-li').on('click', function (){
