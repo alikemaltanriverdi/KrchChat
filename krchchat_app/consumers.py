@@ -28,14 +28,17 @@ class ChatConsumer(AsyncConsumer):
     async def websocket_receive(self, event):
         print('receive', event)
         received_data = json.loads(event['text'])
-        msg = received_data.get('message')
+        if received_data.get('message', None) is not None:
+            msg = received_data.get('message')
+            typing = False
+            if not msg:
+                print('Error:: empty message')
+                return False
+        else:
+            typing = True
         sent_by_id = received_data.get('sent_by')
         send_to_id = received_data.get('send_to')
         conversation_id = received_data.get('conversation_id')
-
-        if not msg:
-            print('Error:: empty message')
-            return False
 
         sent_by_user = await self.get_user_object(sent_by_id)
         send_to_user = await self.get_user_object(send_to_id)
@@ -47,15 +50,23 @@ class ChatConsumer(AsyncConsumer):
         if not conversation_obj:
             print('Error:: conversation id is incorrect')
 
-        await self.create_chat_message(conversation_obj, sent_by_user, msg)
+        if not typing:
+            await self.create_chat_message(conversation_obj, sent_by_user, msg)
 
         other_user_chat_room = f'user_chatroom_{send_to_id}'
         self_user = self.scope['user']
-        response = {
-            'message': msg,
-            'sent_by': self_user.id,
-            'conversation_id': conversation_id
-        }
+        if typing:
+            response = {
+                'typing': received_data.get('typing'),
+                'sent_by': self_user.id,
+                'conversation_id': conversation_id
+            }
+        else:
+            response = {
+                'message': msg,
+                'sent_by': self_user.id,
+                'conversation_id': conversation_id
+            }
 
         await self.channel_layer.group_send(
             other_user_chat_room,
@@ -72,8 +83,6 @@ class ChatConsumer(AsyncConsumer):
                 'text': json.dumps(response)
             }
         )
-
-
 
     async def websocket_disconnect(self, event):
         print('disconnect', event)
@@ -110,14 +119,13 @@ class ChatConsumer(AsyncConsumer):
     @database_sync_to_async
     def create_conversation(self, sender_id, receiver_id):
         Conversation.objects.create(first_person_id=sender_id, second_person_id=receiver_id)
-        
+
 
 class TranscriptConsumer(AsyncWebsocketConsumer):
     envs = environ.Env()
     envs.read_env()
     api_key = envs("DEEPGRAM_API_KEY")
     dg_client = Deepgram(api_key)
-    num_xfer_debug = 0
 
     async def get_transcript(self, data: Dict) -> None:
         if 'channel' in data:
@@ -145,11 +153,11 @@ class TranscriptConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-           self.room_group_name,
-           self.channel_name
+            self.room_group_name,
+            self.channel_name
         )
 
     async def receive(self, bytes_data):
-        #print(f"Got media data: {self.num_xfer_debug}")
+        # print(f"Got media data: {self.num_xfer_debug}")
         self.num_xfer_debug += 1
         self.socket.send(bytes_data)
