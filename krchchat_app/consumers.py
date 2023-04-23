@@ -158,6 +158,5 @@ class TranscriptConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, bytes_data):
-        # print(f"Got media data: {self.num_xfer_debug}")
         self.num_xfer_debug += 1
         self.socket.send(bytes_data)

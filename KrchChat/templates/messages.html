@@ -15,7 +15,8 @@
 	<body>
     {% if user.is_authenticated %}
         <h1 class="pull-right">Logged in as : {{ user.username }}</h1>
-		<div class="btn btn-danger btn-sm pull-right" id="log-out">Log Out</div>
+		<a href="{% url "logout" %}" class="btn btn-danger btn-sm pull-right" id="log-out" role="button">Log Out</a>
+
         <input type="hidden" id="logged-in-user" value="{{ user.id }}">
     {% endif %}
 		<div class="container-fluid h-100">
@@ -32,16 +33,22 @@
 						</div>
 					</div>
 					<div class="card-body contacts_body">
-						<ui class="friends">
+						<ui class="friends" id="friend-list">
                             {% for friend in friends %}
                                 <form name="friend-form" method="post">
                                 {% csrf_token %}
                                     <input name="friend" value="{{friend.id}}" type="hidden">
-                                    <li name="friendbox" class="friend-li" friend-id="user_{{ friend.id }}" style="cursor: pointer">
+                                    <li name="friendbox" class="friend-li" friend-id="user_{{ friend.id }}" id="{{ friend.username }}" style="cursor: pointer">
                                         <div class="d-flex bd-highlight">
                                             <div class="img_cont">
                                                 <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
-                                                <span class="online_icon"></span>
+												{% for cur_user in online_users %}
+													{% if  cur_user == friend.username %}
+														<span class="status online_icon"></span>
+														{% else %}
+														<span class="status"></span>
+													{%  endif %}
+												{% endfor %}
                                             </div>
                                             <div class="user_info">
     											<span>{{ friend.username}}</span>
@@ -72,7 +79,6 @@
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
                                         </div>
                                         <div class="user_info">
                                             {% if conversation.first_person == user %}
@@ -103,7 +109,6 @@
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
                                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
                                         </div>
                                         <div class="user_info">
                                             {% if conversation.first_person == user %}
@@ -183,7 +188,32 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			function updateFriendList() {
+				$.ajax({
+					url: '{% url "friends_online_status" %}',
+					success: function(data) {
+						var onlineFriends = data.online_users;
+						$('#friend-list li').each(function() {
 
+							var username = $(this).attr('id');
+							if (onlineFriends.includes(username)) {
+								$(this).find('.status').addClass('online_icon');
+							} else {
+								$(this).find('.status').removeClass('online_icon');
+							}
+						});
+					},
+					complete: function() {
+						setTimeout(updateFriendList, 5000); // call this function again in 5 seconds
+					}
+				});
+			}
+
+			$(document).ready(function() {
+				updateFriendList();
+			});
+		</script>
         <script src="{% static 'js/messages.js' %}"></script>
         <script src="{% static 'js/conversations.js' %}"></script>
 	</body>
