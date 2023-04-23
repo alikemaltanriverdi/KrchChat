@@ -16,9 +16,13 @@
 
     </head>
 
-	<body  class="stretched side-panel-left" style=" background-image: linear-gradient(#FFFFFF, aquamarine); ">
-        {% if user.is_authenticated %}
-        
+
+	<body>
+    {% if user.is_authenticated %}
+        <h1 class="pull-right">Logged in as : {{ user.username }}</h1>
+		<a href="{% url "logout" %}" class="btn btn-danger btn-sm pull-right" id="log-out" role="button">Log Out</a>
+
+
         <input type="hidden" id="logged-in-user" value="{{ user.id }}">
         {% endif %}
         <div class="body-overlay"></div>
@@ -244,19 +248,31 @@
 						</div>
 					</div>
 					<div class="card-body contacts_body">
-						<ui class="friends">
+						<ui class="friends" id="friend-list">
                             {% for friend in friends %}
-                                <li class="{% if forloop.first %}active{% endif %} friend-li" friend-id="user_{{ friend.id }}" style="cursor: pointer">
-                                    <div class="d-flex bd-highlight">
-                                        <div class="img_cont">
-                                            <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
+
+                                <form name="friend-form" method="post">
+                                {% csrf_token %}
+                                    <input name="friend" value="{{friend.id}}" type="hidden">
+                                    <li name="friendbox" class="friend-li" friend-id="user_{{ friend.id }}" id="{{ friend.username }}" style="cursor: pointer">
+                                        <div class="d-flex bd-highlight">
+                                            <div class="img_cont">
+                                                <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+												{% for cur_user in online_users %}
+													{% if  cur_user == friend.username %}
+														<span class="status online_icon"></span>
+														{% else %}
+														<span class="status"></span>
+													{%  endif %}
+												{% endfor %}
+                                            </div>
+                                            <div class="user_info">
+    											<span>{{ friend.username}}</span>
+                                            </div>
+
                                         </div>
-                                        <div class="user_info">
-											<span>{{ friend.username}}</span>
-                                        </div>
-                                    </div>
-                                </li>
+                                    </li>
+                                </form>
                             {% endfor %}
 						</ui>
 					</div>
@@ -276,11 +292,12 @@
 					<div class="card-body contacts_body">
 						<ui class="contacts">
                             {% for conversation in conversations %}
-                                <li class="{% if forloop.first %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
+                                <li class="{% if conversationId == conversation.id %}active{% endif %} contact-li" chat-id="chat_{{ conversation.id }}" style="cursor: pointer">
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
-                                            <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
+
+                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+
                                         </div>
                                         <div class="user_info">
                                             {% if conversation.first_person == user %}
@@ -300,7 +317,7 @@
 				<div class="col-md-8 col-xl-6 chat h-100 mt-4">
 					<div class="card">
                         {% for conversation in conversations %}
-                            <div class="messages-wrapper  {% if forloop.first %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
+                            <div class="messages-wrapper  {% if conversationId == conversation.id %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
                                         {% if conversation.first_person == user %}
                                             {{ conversation.second_person.id }}
                                         {% else %}
@@ -310,8 +327,9 @@
                                 <div class="card-header msg_head">
                                     <div class="d-flex bd-highlight">
                                         <div class="img_cont">
-                                            <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img">
-                                            <span class="online_icon"></span>
+
+                                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
+
                                         </div>
                                         <div class="user_info">
                                             {% if conversation.first_person == user %}
@@ -362,7 +380,7 @@
 
                                     <!------- messages ------->
                                 </div>
-
+                                <div class=" type typing_status"></div>
 					        </div>
                         {% endfor %}
                         <div class=""></div>
@@ -394,9 +412,34 @@
 			</div>
 		</div>
 
+		<script>
+			function updateFriendList() {
+				$.ajax({
+					url: '{% url "friends_online_status" %}',
+					success: function(data) {
+						var onlineFriends = data.online_users;
+						$('#friend-list li').each(function() {
+
+							var username = $(this).attr('id');
+							if (onlineFriends.includes(username)) {
+								$(this).find('.status').addClass('online_icon');
+							} else {
+								$(this).find('.status').removeClass('online_icon');
+							}
+						});
+					},
+					complete: function() {
+						setTimeout(updateFriendList, 5000); // call this function again in 5 seconds
+					}
+				});
+			}
+
+			$(document).ready(function() {
+				updateFriendList();
+			});
+		</script>
         <script src="{% static 'js/messages.js' %}"></script>
-        <script src="{% static 'js/functions.js' %}"></script>
-       
-		
+        <script src="{% static 'js/conversations.js' %}"></script>
+
 	</body>
 </html>

@@ -1,44 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-    <head>  
-		<title>Chat</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
-        <link rel="stylesheet" href="{% static 'css/messages.css' %}">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 
-    </head>
+{% block content %}
 
-<body>
-    <header id="header" class="full-header ligth">
-        <div id="header-wrap">
-            <div class="container">
-                <div class="header-row">
-
-                    <!-- Logo
-                    ============================================= -->
-                    <div id="logo">
-                        <a href="#">
-                            <img class="logo-default side-panel-trigger" srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
-                            <img class="logo-dark side-panel-trigger" srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
-                        </a>
-                    </div><!-- #logo end -->
-
-                
-                
-
-
-                </div>
-            </div>
-        </div>
-        <div class="header-wrap-clone"></div>
-    </header><!-- #header end -->
-    <div class="container py-5">
     <form method ="post">
         {% csrf_token %}
         {{form.as_p}}
@@ -46,6 +8,6 @@
         <button type = "submit">Login</button>
 		<p>Don't have an account? Click <a class="btn btn-primary" href="/register">here to Register.</a></p>
     </form>
-    </div>
-</body>
-</html>
+
+{% endblock %}
+
