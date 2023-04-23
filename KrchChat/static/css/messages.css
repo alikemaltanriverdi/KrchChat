@@ -2,9 +2,9 @@ body,
 html {
   height: 100%;
   margin: 0;
-  background: #7f7fd5;
+  /* background: #7f7fd5;
   background: -webkit-linear-gradient(to right, #91eae4, #86a8e7, #7f7fd5);
-  background: linear-gradient(to right, #91eae4, #86a8e7, #7f7fd5);
+  background: linear-gradient(to right, #91eae4, #86a8e7, #7f7fd5); */
 }
 
 ul {
@@ -16,9 +16,13 @@ ul {
   margin-bottom: auto;
 }
 .card {
-  height: 90%;
+  
   border-radius: 15px !important;
   background-color: rgba(0, 0, 0, 0.4) !important;
+  overflow: auto!important;
+  display: flex!important;
+  height: 600px!important;
+  flex-direction: column-reverse!important;
 }
 .contacts_body {
   padding: 0.75rem 0 !important;
