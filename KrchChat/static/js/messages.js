@@ -112,6 +112,7 @@ chatSocket.onmessage = async function(e){
         }
         newMessage(message, sent_by_id, conversation_id)
     }
+    
 }
 
 function updateTypingStatus(user, conversation_id, is_typing) {
@@ -211,6 +212,8 @@ function newMessage(message, sent_by_id, conversation_id) {
         scrollToBottom: $(document).height()
     }, 50);
 	input_message.val(null);
+    var objDiv = document.getElementById("chat");
+	objDiv.scrollTop = objDiv.scrollHeight;
 }
 
 var input_form_map = new Map();
