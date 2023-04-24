@@ -212,6 +212,8 @@ function newMessage(message, sent_by_id, conversation_id) {
         scrollToBottom: $(document).height()
     }, 50);
 	input_message.val(null);
+
+    //Scroll chat to bottom 
     var objDiv = document.getElementById("chat");
 	objDiv.scrollTop = objDiv.scrollHeight;
 }
@@ -270,6 +272,7 @@ function captureUserMedia(successCallback, errorCallback) {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(successCallback).catch(errorCallback);
 }
 function onMediaSuccess(stream) {
+    console.log('onMediaSuccess');
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.stream = stream;
     mediaRecorder.addEventListener('dataavailable', async (event) => {
@@ -285,11 +288,13 @@ function onMediaError(e) {
 document.querySelector("#speech_to_text").onclick = function (e) {
     if (recording === false)
     {
+        
         document.getElementById("speech_text_icon").className = 'fas fa-stop'
         document.querySelector('#input-message').value = ""
         captureUserMedia(onMediaSuccess, onMediaError);
         recording = true;
     } else {
+        
     document.getElementById("speech_text_icon").className = 'fas fa-microphone'
         mediaRecorder.stop()
         mediaRecorder.stream.getAudioTracks().forEach(function(track) {
@@ -300,12 +305,22 @@ document.querySelector("#speech_to_text").onclick = function (e) {
 };
 
 speechSocket.onmessage = (message) => {
+    console.log('SpeechSocket on message');
     const received = message.data
     if (received) {
         console.log(received)
         document.querySelector('#input-message').value += received
     }
 
+}
+
+// New speech socket handlers
+speechSocket.onerror = async function(e){
+    console.log('speechSocket error', e)
+}
+
+speechSocket.onclose = async function(e){
+    console.log('speechSocket close', e)
 }
 
 
