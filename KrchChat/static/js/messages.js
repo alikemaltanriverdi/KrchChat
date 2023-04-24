@@ -146,32 +146,60 @@ function newMessage(message, sent_by_id, conversation_id) {
     var strTime =time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 
 	if(sent_by_id == USER_ID){
-	    message_element = `
-			<div class="d-flex mb-4 replied">
-				<div class="msg_cotainer_send">
-					${message}
-					<span class="msg_time_send">${strTime}, Today</span>
-				</div>
+	    // message_element = `
+		// 	<div class="d-flex mb-4 replied">
+		// 		<div class="msg_cotainer_send">
+		// 			${message}
+		// 			<span class="msg_time_send">${strTime}, Today</span>
+		// 		</div>
                
-				<div class="img_cont_msg"> 
-                <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
+		// 		<div class="img_cont_msg"> 
+        //         <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
 					
-				</div>
-			</div>
-	    `
+		// 		</div>
+		// 	</div>
+	    // `
+        message_element = `
+        <li class="me">
+					<div class="entete">
+						<h3>Me</h3>
+						<h2>${strTime}, Today</h2>
+						<span class="status blue"></span>
+					</div>
+					<div class="triangle"></div>
+					<div class="message">
+                    ${message}
+					</div>
+				</li>
+    `
+        
     }
 	else{
-	    message_element = `
-           <div class="d-flex mb-4 received">
-              <div class="img_cont_msg">
-                 <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
-              </div>
-              <div class="msg_cotainer">
-                 ${message}
-              <span class="msg_time">${strTime}, Today</span>
-              </div>
-           </div>
+	    // message_element = `
+        //    <div class="d-flex mb-4 received">
+        //       <div class="img_cont_msg">
+        //          <img src="https://thumb.ac-illust.com/52/52681e2491ae435cfd5af91226c3c3cd_t.jpeg" class="rounded-circle user_img_msg">
+        //       </div>
+        //       <div class="msg_cotainer">
+        //          ${message}
+        //       <span class="msg_time">${strTime}, Today</span>
+        //       </div>
+        //    </div>
+        // `
+        message_element = `
+        <li class="you">
+        <div class="entete">
+            <span class="status green"></span>
+            <h2>{{ conversation.first_person.username }}</h2>
+            <h3>${strTime}, Today</h3>
+        </div>
+        <div class="triangle"></div>
+        <div class="message">
+        ${message}
+        </div>
+        </li>
         `
+        
 
     }
 
