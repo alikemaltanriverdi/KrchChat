@@ -39,22 +39,6 @@ chatSocket.onopen = async function(e){
       
         let conversation_id = get_active_conversation_id()
 
-        if (conversation_id){
-            let data = {
-                'message': message,
-                'sent_by': USER_ID,
-                'send_to': send_to,
-                'conversation_id': conversation_id
-            }
-            debugger;
-            data = JSON.stringify(data)
-    
-            chatSocket.send(data)
-            
-            $(this)[0].reset()
-        }
-
-
         let data = {
             'message': message,
             'sent_by': USER_ID,
@@ -152,18 +136,21 @@ chatSocket.onclose = async function(e){
 
 
 function newMessage(message, sent_by_id, conversation_id) {
-    debugger;
+
 	if ($.trim(message) === '') {
 		return false;
 	}
 	let message_element;
 	let chat_id = 'chat_' + conversation_id
+    var time = new Date();
+    var strTime =time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
 	if(sent_by_id == USER_ID){
 	    message_element = `
 			<div class="d-flex mb-4 replied">
 				<div class="msg_cotainer_send">
 					${message}
-					<span class="msg_time_send">8:55 AM, Today</span>
+					<span class="msg_time_send">${strTime}, Today</span>
 				</div>
                
 				<div class="img_cont_msg"> 
@@ -181,7 +168,7 @@ function newMessage(message, sent_by_id, conversation_id) {
               </div>
               <div class="msg_cotainer">
                  ${message}
-              <span class="msg_time">8:40 AM, Today</span>
+              <span class="msg_time">${strTime}, Today</span>
               </div>
            </div>
         `
@@ -289,3 +276,4 @@ speechSocket.onmessage = (message) => {
 }
 
 
+})
