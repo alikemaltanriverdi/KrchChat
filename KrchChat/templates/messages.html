@@ -108,8 +108,9 @@
 						============================================= -->
 						<div id="logo">
 							<a href="#">
-								<img class="logo-default side-panel-trigger" srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
-								<img class="logo-dark side-panel-trigger" srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
+								<!-- side-panel-trigger -->
+								<img class="logo-default " srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
+								<img class="logo-dark " srcset="{% static 'assets/Krch-logos_black.png' %}" src="{% static 'assets/Krch-logos_black.png' %}" alt="Krch Logo">
 							</a>
 						</div><!-- #logo end -->
 
@@ -194,7 +195,7 @@
 
 							<ul class="menu-container">
 								<li class="menu-item">
-									<a class="menu-link" href="index.html"><div>Home</div></a>
+									<!-- <a class="menu-link" href="index.html"><div>Home</div></a> -->
 									<ul class="sub-menu-container">
 										<li class="menu-item">
 											<a class="menu-link" href="niche-demos.html"><div>Messages</div></a>
@@ -384,6 +385,11 @@
         <script src="{% static 'js/messages.js' %}"></script>
         <script src="{% static 'js/conversations.js' %}"></script>
         <script src="{% static 'external/js/functions.js' %}"></script>
-
+		<script>
+			window.onload=function () {
+				var objDiv = document.getElementById("chat");
+				objDiv.scrollTop = objDiv.scrollHeight;
+			}
+		</script>
 	</body>
 </html>

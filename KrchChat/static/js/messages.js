@@ -7,6 +7,8 @@ const USER_ID = $('#logged-in-user').val()
 
 
 jQuery(document).ready(function($){
+$('body').scrollTop($('ul li').last().position().top + $('ul li').last().height());
+
 let loc = window.location
 let wsStart = 'ws://';
 if(loc.protocol === 'http:') {
