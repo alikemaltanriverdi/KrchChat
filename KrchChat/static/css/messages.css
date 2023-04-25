@@ -698,8 +698,14 @@ aside li h3{
 .green{
 	background-color:#58b666;
 }
+.green_color{
+  color:#58b666 ;
+}
 .orange{
 	background-color:#ff725d;
+}
+.orange_color{
+  color:#ff725d ;
 }
 .blue{
 	background-color:#6fbced;

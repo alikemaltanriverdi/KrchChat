@@ -7,7 +7,6 @@ const USER_ID = $('#logged-in-user').val()
 
 
 jQuery(document).ready(function($){
-$('body').scrollTop($('ul li').last().position().top + $('ul li').last().height());
 
 let loc = window.location
 let wsStart = 'ws://';
@@ -20,7 +19,7 @@ if(loc.protocol === 'https:') {
 let initialURL = wsStart + loc.host + "/ws/"
 
 var chatSocket = new WebSocket(initialURL + "chat")
-var speechSocket = new WebSocket(initialURL+'listen')
+var speechSocket = new WebSocket(initialURL + "listen")
 
 // $("#log-out").click(function() {
 //
@@ -277,6 +276,8 @@ function onMediaSuccess(stream) {
     mediaRecorder.stream = stream;
     mediaRecorder.addEventListener('dataavailable', async (event) => {
         if (event.data.size > 0 && speechSocket.readyState == 1) {
+          
+
             speechSocket.send(event.data)
         }
     })
@@ -305,7 +306,8 @@ document.querySelector("#speech_to_text").onclick = function (e) {
 };
 
 speechSocket.onmessage = (message) => {
-    console.log('SpeechSocket on message');
+    debugger;
+
     const received = message.data
     if (received) {
         console.log(received)
