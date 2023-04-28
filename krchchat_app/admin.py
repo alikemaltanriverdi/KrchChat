@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Conversation, ChatMessage
+from .models import Conversation, ChatMessage, UserProfile
 
 admin.site.register(ChatMessage)
+admin.site.register(UserProfile)
 
 
 class ChatMessage(admin.TabularInline):
@@ -16,6 +17,5 @@ class ConversationAdmin(admin.ModelAdmin):
 	
 	class Meta:
 		model = Conversation
-
-
+	
 admin.site.register(Conversation, ConversationAdmin)
