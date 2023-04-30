@@ -142,13 +142,20 @@
                                     </div>
                                 </div>
 
+                                {% load extra_filters %}
                                 <div class="card-body msg_card_body">
                                     <!------- messages ------->
                                     {% for chat in conversation.chatmessage_conversation.all %}
                                         {% if chat.user == user %}
                                             <div class="d-flex mb-4 replied">
                                                 <div class="msg_cotainer_send">
-                                                    {{ chat.message }}
+                                                    {% if chat.message|slice:"0:11" != '(\'&(_FILE_)' %}
+                                                        {{ chat.message }}
+                                                    {% else %}
+                                                    <a href={{chat.message|get_link}} target="_blank" download={{chat.message|filename}}>
+                                                        {{ chat.message|filename}}
+                                                    </a>
+                                                    {% endif %}
                                                     <span class="msg_time_send">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
                                                 </div>
                                             <div class="img_cont_msg">
@@ -161,7 +168,13 @@
                                                 <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
                                             </div>
                                             <div class="msg_cotainer">
-                                                {{ chat.message }}
+                                                    {% if chat.message|slice:"0:11" != '(\'&(_FILE_)' %}
+                                                        {{ chat.message }}
+                                                    {% else %}
+                                                    <a href={{chat.message|get_link}} target="_blank" download={{chat.message|filename}}>
+                                                        {{ chat.message|filename}}
+                                                    </a>
+                                                    {% endif %}
                                                 <span class="msg_time">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
                                             </div>
                                         </div>
@@ -178,7 +191,7 @@
                                 <form id="send-message-form">
                                     <div class="input-group">
                                         <div class="input-group-append">
-                                            <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                                            <span class="input-group-text attach_btn"><i class="fas fa-paperclip" id="attach_button"></i></span>
                                         </div>
                                         <input type="text" name="" id="input-message" class="form-control type_msg" placeholder="Type your message...">
                                         <div class="input-group-append">
