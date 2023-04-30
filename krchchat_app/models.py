@@ -50,5 +50,36 @@ class ChatMessage(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	message = models.TextField()
 	timestamp = models.DateTimeField(auto_now_add=True)
+ 
 
+class GroupChatManager(models.Manager):
+    def get_by_users(self, users):
+        # Ensure that all the given users exist
+        user_ids = [user.id for user in users]
+        User.objects.in_bulk(user_ids)
 
+        # Find the group chats that contain all the given users
+        group_chats = self.filter(users__in=users).distinct()
+        for group_chat in group_chats:
+            if set(group_chat.users.all()) == set(users):
+                return group_chat
+
+        raise self.model.DoesNotExist(f"No {self.model._meta.verbose_name} matches the given query.")
+
+class GroupChat(models.Model):
+    users = models.ManyToManyField(User)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = GroupChatManager()
+
+    def __str__(self):
+        return f'GroupChat {self.id}'
+
+class GroupChatMessage(models.Model):
+    group_chat = models.ForeignKey(GroupChat, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.sender} in {self.group_chat} - {self.timestamp}'

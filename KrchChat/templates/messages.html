@@ -71,6 +71,18 @@
 								<span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
 							</div>
 						</div>
+                        <div class="group-chat">
+                            <form name="groupchat-form">
+                                <p>Create a groupchat:</p>
+                                {% for friend in friends %}
+                                  <input type="checkbox" name="friend" value="{{ friend }}">
+                                  <label>{{ friend }}</label><br>
+                                {% endfor %}
+                                <br>
+                                {% csrf_token %}
+                                <input type="submit" value="Submit" onclick="submitForm(event)">
+                            </form>
+                        </div>
 					</div>
 					<div class="card-body contacts_body">
 						<ui class="contacts">
@@ -216,5 +228,6 @@
 		</script>
         <script src="{% static 'js/messages.js' %}"></script>
         <script src="{% static 'js/conversations.js' %}"></script>
+        <script src="{% static 'js/groupchat.js' %}"></script>
 	</body>
 </html>
