@@ -16,9 +16,10 @@ let initialURL = wsStart + loc.host + "/ws/"
 
 var chatSocket = new WebSocket(initialURL + "chat")
 var speechSocket = new WebSocket(initialURL+'listen')
-$("#log-out").click(function() {
-  window.location = '/accounts/logout/'
-});
+// $("#log-out").click(function() {
+//
+//   window.location = '/logout/'
+// });
 
 var is_typing = 0
 

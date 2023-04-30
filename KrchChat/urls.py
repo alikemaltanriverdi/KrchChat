@@ -28,8 +28,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('chat/', include('krchchat_app.urls')),
     # login-section
-    path('accounts/login/', LoginView.as_view(template_name='LoginPage.html'), name="login-user"),
-    path("accounts/logout/", LogoutView.as_view(), name="logout-user"),
-    path("register", views.register_request, name="register")
+    path('login/', LoginView.as_view(template_name='LoginPage.html'), name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("register", views.register_request, name="register"),
+    path('online/', views.user_online, name='user_online'),
+    path('offline/', views.user_offline, name='user_offline'),
+    path('online_status/', views.friends_online_status, name='friends_online_status')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

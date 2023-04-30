@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-<body>
+{% block content %}
     <form method ="post">
         {% csrf_token %}
         {{form.as_p}}
@@ -8,6 +6,4 @@
         <button type = "submit">Login</button>
 		<p>Don't have an account? Click <a class="btn btn-primary" href="/register">here to Register.</a></p>
     </form>
-
-</body>
-</html>
+{% endblock %}
