@@ -26,16 +26,27 @@ class ChatConsumer(AsyncConsumer):
         })
 
     async def websocket_receive(self, event):
-        print('receive', event)
+        #print('receive', event)
         received_data = json.loads(event['text'])
         if received_data.get('message', None) is not None:
             msg = received_data.get('message')
-            typing = False
+            socket_msg_type = "message"
+            print('receive', event)
             if not msg:
                 print('Error:: empty message')
                 return False
+        elif received_data.get('typing', None) is not None:
+            socket_msg_type = "typing"
+            print('Typing status', event)
+        # its a file
+        elif received_data.get('file_name', None) is not None:
+            socket_msg_type = "file"
+            filename = received_data.get('file_name', None)
+            filecontents = received_data.get('file_contents', None)
+            print('File xfer', filename)
         else:
-            typing = True
+            print('Error: socket receive unexpected data')
+            return False
         sent_by_id = received_data.get('sent_by')
         send_to_id = received_data.get('send_to')
         conversation_id = received_data.get('conversation_id')
@@ -50,20 +61,30 @@ class ChatConsumer(AsyncConsumer):
         if not conversation_obj:
             print('Error:: conversation id is incorrect')
 
-        if not typing:
+        if socket_msg_type == "message":
             await self.create_chat_message(conversation_obj, sent_by_user, msg)
+        elif socket_msg_type == "file":
+            await self.create_file_message(conversation_obj, sent_by_user, filename, filecontents)
+
 
         other_user_chat_room = f'user_chatroom_{send_to_id}'
         self_user = self.scope['user']
-        if typing:
+        if socket_msg_type == "typing":
             response = {
                 'typing': received_data.get('typing'),
                 'sent_by': self_user.id,
                 'conversation_id': conversation_id
             }
-        else:
+        elif socket_msg_type == "message":
             response = {
                 'message': msg,
+                'sent_by': self_user.id,
+                'conversation_id': conversation_id
+            }
+        elif socket_msg_type == "file":
+            response = {
+                'file': filename,
+                'file_data': filecontents,
                 'sent_by': self_user.id,
                 'conversation_id': conversation_id
             }
@@ -117,6 +138,11 @@ class ChatConsumer(AsyncConsumer):
         ChatMessage.objects.create(conversation=conversation, user=user, message=msg)
 
     @database_sync_to_async
+    def create_file_message(self, conversation, user, name, contents):
+        msg_field = ("&(_FILE_)", name, contents)
+        ChatMessage.objects.create(conversation=conversation, user=user, message=msg_field)
+
+    @database_sync_to_async
     def create_conversation(self, sender_id, receiver_id):
         Conversation.objects.create(first_person_id=sender_id, second_person_id=receiver_id)
 
@@ -158,5 +184,4 @@ class TranscriptConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, bytes_data):
-        self.num_xfer_debug += 1
         self.socket.send(bytes_data)
