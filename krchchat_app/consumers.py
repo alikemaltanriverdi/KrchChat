@@ -145,6 +145,25 @@ class ChatConsumer(AsyncConsumer):
     @database_sync_to_async
     def create_conversation(self, sender_id, receiver_id):
         Conversation.objects.create(first_person_id=sender_id, second_person_id=receiver_id)
+    
+    @database_sync_to_async
+    def get_groupchat(self, groupchat_id):
+        qs = GroupChat.objects.filter(id=groupchat_id)
+        if qs.exists():
+            obj = qs.first()
+        else:
+            obj = None
+        return obj
+        
+    @database_sync_to_async
+    def create_group_chat_message(self, groupchat, user, msg):
+        GroupChatMessage.objects.create(groupchat=groupchat, sender=user, message=msg)
+    
+    @database_sync_to_async
+    def create_group_chat(user_ids):
+        group_chat = GroupChat.objects.create()
+        group_chat.users.add(*user_ids)
+        return group_chat.id
 
 
 class TranscriptConsumer(AsyncWebsocketConsumer):
