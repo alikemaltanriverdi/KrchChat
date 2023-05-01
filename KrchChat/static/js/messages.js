@@ -215,6 +215,16 @@ $('.friend-li').on('click', function (){
     $('.messages-wrapper[friend-id="' + friend_id +'"]').addClass('is_active')
 })
 
+$('.group-li').on('click', function (){
+    $('.groups .active').removeClass('active')
+    $(this).addClass('active')
+
+    // message wrappers
+    let group_id = $(this).attr('id')
+    $('.messages-wrapper.is_active').removeClass('is_active')
+    $('.messages-wrapper[group-id="' + group_id +'"]').addClass('is_active')
+})
+
 function get_active_other_user_id(){
     let other_user_id = $('.messages-wrapper.is_active').attr('other-user-id')
     other_user_id = $.trim(other_user_id)
