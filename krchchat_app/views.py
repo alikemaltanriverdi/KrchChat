@@ -4,8 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 # Create your views here.
-from krchchat_app.models import Conversation, User, UserProfile
-from django.db.models import Q
+from krchchat_app.models import Conversation, User, UserProfile, GroupChat
+from django.db.models import Q, Count
 import traceback
 from django.http import JsonResponse
 
@@ -50,24 +50,47 @@ def messages_page(request):
     
     user_online(request)
     conversationId = -1
+    chatExist = 0
     if request.method == "POST":
-        data = dict(request.POST)
+        if 'create_group_chat' in request.POST:
+            selected_users = request.POST.getlist('friend')
+            current_user = User.objects.get(id=request.user.id)
+            selected_users.append(current_user.id)
+            print("request.user------------------------------------------------")
+            print(request.user)
+            group_chat_users = User.objects.filter(id__in=selected_users)
+            print("group_chat_users------------------------------------------------")
+            print(group_chat_users)
+            # Check if a group chat already exists with the selected users
+            group_chats = GroupChat.objects.filter(users__in=group_chat_users)
+            for group_chat in group_chats:
+                if set(group_chat_users) == set(group_chat.users.all()):
+                    chatExist = 1
+                    print("A group chat with the selected users already exists")
+            if (chatExist == 0) :
+                new_group_chat = create_group_chat(group_chat_users)
+            chatExist = 0
 
-        friend_id = int(data['friend'][0])
-        conversationId = getConversationId(request.user.id, friend_id)
-        if conversationId == -1:
-            conversationId = createConversation(request.user.id, friend_id)
+        else:
+            data = dict(request.POST)
+
+            friend_id = int(data['friend'][0])
+            conversationId = getConversationId(request.user.id, friend_id)
+            if conversationId == -1:
+                conversationId = createConversation(request.user.id, friend_id)
 
 
     conversations = Conversation.objects.by_user(user=request.user).prefetch_related('chatmessage_conversation').order_by('timestamp')
     friends = User.objects.prefetch_related('conversation_second_person').exclude(username=request.user.username).all()
+    group_chats = GroupChat.objects.filter(users=request.user)
     
     online_users = UserProfile.objects.filter(user__in=friends, is_online=True).all()
     context = {
         'conversations': conversations,
         'friends': friends,
         'conversationId': conversationId,
-        'online_users': online_users
+        'online_users': online_users,
+        'group_chats': group_chats
     }
     return render(request, 'messages.html', context)
 
@@ -98,3 +121,9 @@ def createConversation(user, friend):
     conversation = Conversation(first_person_id=user, second_person_id=friend)
     conversation.save()
     return conversation.id
+
+def create_group_chat(group_chat_users):
+    group_chat = GroupChat.objects.create()
+    group_chat.users.set(group_chat_users)
+    group_chat.save()
+    return group_chat.id

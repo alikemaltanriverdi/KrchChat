@@ -72,15 +72,15 @@
 							</div>
 						</div>
                         <div class="group-chat">
-                            <form name="groupchat-form">
+                            <form name="groupchat-form"  method="post">
                                 <p>Create a groupchat:</p>
                                 {% for friend in friends %}
-                                  <input type="checkbox" name="friend" value="{{ friend }}">
-                                  <label>{{ friend }}</label><br>
+                                  <input type="checkbox" name="friend" value="{{ friend.id }}">
+                                  <label>{{ friend.username }}</label><br>
                                 {% endfor %}
                                 <br>
                                 {% csrf_token %}
-                                <input type="submit" value="Submit" onclick="submitForm(event)">
+                                <input type="submit" name="create_group_chat" value="Submit">
                             </form>
                         </div>
 					</div>
@@ -103,7 +103,18 @@
                                     </div>
                                 </li>
                             {% endfor %}
-						</ui>
+                            <h2>Group Chats</h2>
+                                <ui class="groups">
+                                    {% for group_chat in group_chats %}
+                                        <li class="{% if groupId == group.id %}active{% endif %} group-li" chat-id="group_{{ group.id }}" style="cursor: pointer">
+                                            <div class="d-flex bd-highlight">
+                                                <div class="group_info">
+                                                    <span>{{ group_chat.users.all|join:", " }}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ui>
 					</div>
 					<div class="card-footer"></div>
 				</div></div>
