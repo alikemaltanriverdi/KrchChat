@@ -50,26 +50,23 @@ def messages_page(request):
     
     user_online(request)
     conversationId = -1
-    chatExist = 0
+    groupchatId = -1
     if request.method == "POST":
         if 'create_group_chat' in request.POST:
             selected_users = request.POST.getlist('friend')
             current_user = User.objects.get(id=request.user.id)
             selected_users.append(current_user.id)
-            print("request.user------------------------------------------------")
-            print(request.user)
             group_chat_users = User.objects.filter(id__in=selected_users)
-            print("group_chat_users------------------------------------------------")
-            print(group_chat_users)
             # Check if a group chat already exists with the selected users
             group_chats = GroupChat.objects.filter(users__in=group_chat_users)
             for group_chat in group_chats:
                 if set(group_chat_users) == set(group_chat.users.all()):
-                    chatExist = 1
+                    groupchatId = group_chat.id
                     print("A group chat with the selected users already exists")
-            if (chatExist == 0) :
-                new_group_chat = create_group_chat(group_chat_users)
-            chatExist = 0
+                    break
+            if groupchatId == -1:
+                groupchatId = createGroupchat(group_chat_users)
+            
 
         else:
             data = dict(request.POST)
@@ -90,7 +87,8 @@ def messages_page(request):
         'friends': friends,
         'conversationId': conversationId,
         'online_users': online_users,
-        'group_chats': group_chats
+        'group_chats': group_chats,
+        'groupchatId': groupchatId
     }
     return render(request, 'messages.html', context)
 
@@ -122,7 +120,7 @@ def createConversation(user, friend):
     conversation.save()
     return conversation.id
 
-def create_group_chat(group_chat_users):
+def createGroupchat(group_chat_users):
     group_chat = GroupChat.objects.create()
     group_chat.users.set(group_chat_users)
     group_chat.save()
