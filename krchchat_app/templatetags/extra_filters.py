@@ -19,3 +19,10 @@ def get_link(value):
     """
     parts = value.split(',')
     return ",".join(parts[2:])[2:-2]
+@register.filter(name='extension')
+def get_link(value):
+    """
+        Returns the value turned into a list.
+    """
+    
+    return value.split(".")[1]
