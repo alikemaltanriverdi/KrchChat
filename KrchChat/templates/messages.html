@@ -174,7 +174,7 @@
 							</div><!-- #top-cart end -->
                                     <!------- messages ------->
                                 </div>
-                                <div class=" type typing_status"></div>
+								
 					        </div>
                   
 								<div class="top-cart-content">
@@ -291,20 +291,11 @@
 						<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
 						<div>
 							<h2 style="font-weight: bold;">{{friend.username}} </h2>
-							{% for cur_user in online_users %}
-						
-									{% if  cur_user == friend.username %}
-										<h3 >
-											<span class="status green"></span>
-											<span class="status_text "style="color: white" ></span>
-										</h3>
-										{% else %}
-										<h3 >
-											<span class="status orange"></span>
-											<span class="status_text" style="color: white"></span>
-										</h3>
-									{%  endif %}
-							{% endfor %}
+							<h3 >
+								<span class="status orange"></span>
+								<span class="status_text" style="color: white"></span>
+							</h3>
+							
 							
 						</div>
 					</li>
@@ -401,7 +392,7 @@
 		</ul>
 		
 		</div>
-
+		<div class=" type typing_status"></div>
 		{% endfor %}
 		<footer>
 			<form id="send-message-form">
