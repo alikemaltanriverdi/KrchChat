@@ -272,10 +272,15 @@ $('.friend-li').on('click', function (){
     let friend_id = $(this).attr('friend-id')
     
 
-    $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide')
-    $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active')
-    var objDiv = document.getElementById("chat");
-	objDiv.scrollTop = objDiv.scrollHeight;
+    $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide');
+    $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active');
+  
+    var elements = document.getElementsByClassName("msg_card_body");
+    
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].scrollTop = elements[i].scrollHeight;
+       
+    }
     
 
     $('.messages-wrapper[friend-id="' + friend_id +'"]').addClass('is_active')
