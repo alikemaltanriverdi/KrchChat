@@ -2,7 +2,6 @@
 let input_message = $('#input-message')
 let message_body = $('.msg_card_body')
 let send_message_form = $('#send-message-form')
-
 const USER_ID = $('#logged-in-user').val()
 
 
@@ -31,7 +30,9 @@ var is_typing = 0
 
 chatSocket.onopen = async function(e){
     // console.log('open', e)
+
     send_message_form.on('submit', function (e){
+       
         e.preventDefault()
         let message = input_message.val()
         console.log('message', message)
@@ -46,6 +47,7 @@ chatSocket.onopen = async function(e){
             'send_to': send_to,
             'conversation_id': conversation_id
         }
+        
         data = JSON.stringify(data)
         chatSocket.send(data)
         $(this)[0].reset()
@@ -229,6 +231,7 @@ function newMessage(message, sent_by_id, conversation_id) {
 
 var input_form_map = new Map();
 $('.contact-li').on('click', function (){
+  
     // Handle saving of text field
     let old_chat_id = "chat_" + get_active_conversation_id()
     if (input_message.val() != "") {
@@ -252,14 +255,44 @@ $('.contact-li').on('click', function (){
 })
 
 $('.friend-li').on('click', function (){
+ 
 
-    $('.friends .active').removeClass('active')
-    $(this).addClass('active')
+    // let active_conversation_id =get_active_conversation_id()
+    // if (active_conversation_id!=null){
+    //     let old_chat_id = "chat_" + get_active_conversation_id()
+    
+    //     if (input_message.val() != "") {
+    //         input_form_map.set(old_chat_id, input_message.val())
+    //     }
+    // }
+    
 
     // message wrappers
+    let chat_id = $(this).attr('chat-id')
     let friend_id = $(this).attr('friend-id')
-    $('.messages-wrapper.is_active').removeClass('is_active')
+    
+
+    $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide')
+    $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active')
+    var objDiv = document.getElementById("chat");
+	objDiv.scrollTop = objDiv.scrollHeight;
+    
+
     $('.messages-wrapper[friend-id="' + friend_id +'"]').addClass('is_active')
+    
+    $('.friend-li ').removeClass('active')
+    $(this).addClass('active')
+  
+ 
+      // Handle loading of text field
+//     if (input_form_map.get(chat_id) !== undefined) {
+//     document.querySelector('#input-message').value = input_form_map.get(chat_id)
+// } else {
+//     document.querySelector('#input-message').value = "" // FIXME RK make this the type a message
+//     }
+  
+   
+   
 })
 
 function get_active_other_user_id(){
@@ -270,7 +303,10 @@ function get_active_other_user_id(){
 
 function get_active_conversation_id(){
     let chat_id = $('.messages-wrapper.is_active').attr('chat-id')
-    let conversation_id = chat_id.replace('chat_', '')
+    if(chat_id ==null){
+        return null;
+    }
+    let conversation_id = chat_id.replace('chat_', '');
     return conversation_id
 }
 
@@ -316,7 +352,7 @@ document.querySelector("#speech_to_text").onclick = function (e) {
 };
 
 speechSocket.onmessage = (message) => {
-    debugger;
+   
 
     const received = message.data
     if (received) {
@@ -379,35 +415,40 @@ function newFile(filename, filedata, sent_by_id, conversation_id) {
 	if(sent_by_id == USER_ID){
         message_element = `
         <li class="me">
-					<div class="entete">
-						<h3>Me</h3>
-						<h2>${strTime}, Today</h2>
-						<span class="status blue"></span>
-					</div>
-					<div class="triangle"></div>
-					<div class="message">
-                    <a href="${filedata}" download=${filename}>
-                        ${filename}
-                    </a>
-					</div>
-				</li>
+            <div class="entete">
+                <h3>Me</h3>
+                <h2>${strTime}, Today</h2>
+                <span class="status blue"></span>
+            </div>
+            <div class="triangle"></div>
+            <div class="message">
+                <img style="width: 100%;height: 100%; " src="${filedata}">
+                ${filename}
+                <a href="${filedata}" download=${filename}>
+                    <i class="fa fa-download "style="text-shadow: 0 0 5px #FFFFFF;"></i>
+                </a>
+            </div>
+        </li>
     `;
 	 
     }
 	else{
+      
         message_element = `
         <li class="you">
-        <div class="entete">
-            <span class="status green"></span>
-            <h2>{{ conversation.first_person.username }}</h2>
-            <h3>${strTime}, Today</h3>
-        </div>
-        <div class="triangle"></div>
-        <div class="message">
-        <a href="${filedata}" download=${filename}>
-                        ${filename}
-                    </a>
-        </div>
+            <div class="entete">
+                <span class="status green"></span>
+                <h2>{{ conversation.first_person.username }}</h2>
+                <h3>${strTime}, Today</h3>
+            </div>
+            <div class="triangle"></div>
+            <div class="message">
+                <img style="width: 100%;height: 100%; " src="${filedata}">
+                ${filename}
+                <a href="${filedata}" download=${filename}>
+                    <i class="fa fa-download "style="text-shadow: 0 0 5px #FFFFFF;"></i>
+                </a>
+            </div>
         </li>
         `;
 	   

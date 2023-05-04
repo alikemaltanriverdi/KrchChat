@@ -363,8 +363,8 @@ ul {
 }
 .msg_card_body {
   overflow-y: auto;
-  max-height: 65%;
-  padding-bottom: 20px;
+  max-height: 100%;
+  
 }
 .card-header {
   border-radius: 15px 15px 0 0 !important;
@@ -598,7 +598,7 @@ ul {
 }
 
 .messages-wrapper{
-  height: 100%;
+  height: 80%;
 }
 
 
@@ -607,7 +607,7 @@ ul {
 }
 
 #container{
-	height:800px;
+	height:100%;
 	background:#eff3f7;
 	margin:0 auto;
 	font-size:0;

@@ -278,13 +278,16 @@
 			<input type="text" placeholder="search">
 		</header>
 		<ul id="friend-list">
+			
             {% for friend in friends %}
+			
+			
 
 				<form name="friend-form" method="post">
 				{% csrf_token %}
 					<input name="friend" value="{{friend.id}}" type="hidden">
 					
-					<li name="friendbox"class="friend-li" friend-id="user_{{ friend.id }}" id="{{ friend.username }}" style="cursor: pointer">
+					<li chat-id="{% for conversation in conversations %}{% if conversation.first_person == friend or conversation.second_person == friend %}chat_{{ conversation.id }} {% endif %}{% endfor %}" name="friendbox"class="friend-li" friend-id="user_{{ friend.id }}" id="{{ friend.username }}" style="cursor: pointer">
 						<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
 						<div>
 							<h2 style="font-weight: bold;">{{friend.username}} </h2>
@@ -312,7 +315,7 @@
 	
 	<main>
 	{% for conversation in conversations %}
-	<div class="messages-wrapper {% if conversationId == conversation.id %}hide is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" other-user-id="
+	<div class="messages-wrapper {% if conversationId == conversation.id %}is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" id="chat_{{ conversation.id }}" other-user-id="
 	{% if conversation.first_person == user %}
 		{{ conversation.second_person.id }}
 	{% else %}
@@ -333,7 +336,7 @@
 			<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
 		</header>
 		{% load extra_filters %}
-		<ul id="chat" class="msg_card_body">
+		<ul id="chat" class="msg_card_body ">
 			{% for chat in conversation.chatmessage_conversation.all %}
 				{% if chat.user == user %}
 					
@@ -396,6 +399,10 @@
 			
 			
 		</ul>
+		
+		</div>
+
+		{% endfor %}
 		<footer>
 			<form id="send-message-form">
 				<div class="input-group">
@@ -420,9 +427,6 @@
 				</div>
 			</form>
 		</footer>
-		</div>
-
-		{% endfor %}
 	</main>
 	
 		</div>
@@ -462,9 +466,29 @@
         <script src="{% static 'js/conversations.js' %}"></script>
         <script src="{% static 'external/js/functions.js' %}"></script>
 		<script>
+			
 			window.onload=function () {
+				var messages_wrapper = document.getElementsByClassName("messages-wrapper")[0];
+				messages_wrapper.setAttribute( 'class', 'messages-wrapper is_active' );
+				var friend_li = document.getElementsByClassName("friend-li")[0];
+				friend_li.setAttribute( 'class', 'friend-li active' );
 				var objDiv = document.getElementById("chat");
 				objDiv.scrollTop = objDiv.scrollHeight;
+			// 	$(document).ready(function(){
+			// 	var objDiv2 = document.getElementsByClassName("msg_card_body");
+			
+			// 	for(var msg in objDiv2){
+			// 		// msg.scrollTop = msg.scrollHeight;
+			// 		// debugger;
+			// 		msg.mCustomScrollbar({
+			// 		theme: 'minimal-dark'
+			// 		});
+					
+			// 		// then set scrollTo
+			// 		msg.mCustomScrollbar('scrollTo', 'bottom');
+			// 	}
+			// })
+				
 			}
 		</script>
 	</body>
