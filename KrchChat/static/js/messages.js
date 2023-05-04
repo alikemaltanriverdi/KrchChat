@@ -255,22 +255,34 @@ $('.contact-li').on('click', function (){
 })
 
 $('.friend-li').on('click', function (){
- 
-
-    // let active_conversation_id =get_active_conversation_id()
-    // if (active_conversation_id!=null){
-    //     let old_chat_id = "chat_" + get_active_conversation_id()
     
-    //     if (input_message.val() != "") {
-    //         input_form_map.set(old_chat_id, input_message.val())
-    //     }
-    // }
-    
-
-    // message wrappers
     let chat_id = $(this).attr('chat-id')
     let friend_id = $(this).attr('friend-id')
+   
+    if (chat_id ==""){
+        let x = friend_id.split("_")[1]
+        let y = loc + 'conversations';
+        fetch('conversations/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              user: USER_ID, // replace with the user ID
+              friend: x // replace with the friend ID
+            })
+          })
+          .then(response => {
+            // handle the response
+          })
+          .catch(error => {
+            // handle the error
+          });
+
+    }
     
+ 
+  
 
     $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide');
     $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active');
@@ -288,15 +300,6 @@ $('.friend-li').on('click', function (){
     $('.friend-li ').removeClass('active')
     $(this).addClass('active')
   
- 
-      // Handle loading of text field
-//     if (input_form_map.get(chat_id) !== undefined) {
-//     document.querySelector('#input-message').value = input_form_map.get(chat_id)
-// } else {
-//     document.querySelector('#input-message').value = "" // FIXME RK make this the type a message
-//     }
-  
-   
    
 })
 

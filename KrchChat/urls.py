@@ -33,6 +33,7 @@ urlpatterns = [
     path("register", views.register_request, name="register"),
     path('online/', views.user_online, name='user_online'),
     path('offline/', views.user_offline, name='user_offline'),
-    path('online_status/', views.friends_online_status, name='friends_online_status')
+    path('online_status/', views.friends_online_status, name='friends_online_status'),
+    path('conversations/', views.apiCreateConversation, name='conversations')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
@@ -10,6 +11,7 @@ import traceback
 from django.http import JsonResponse
 
 from django.http import HttpResponse
+import json
 
 
 def health_check(request):
@@ -98,3 +100,11 @@ def createConversation(user, friend):
     conversation = Conversation(first_person_id=user, second_person_id=friend)
     conversation.save()
     return conversation.id
+
+@csrf_exempt
+def apiCreateConversation(request):
+    data = json.loads(request.body)
+    user = data.get('user')
+    friend = data.get('friend')
+    conversation_id = createConversation(user, friend)
+    return JsonResponse({'conversation_id': conversation_id})
