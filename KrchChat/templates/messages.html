@@ -307,7 +307,9 @@
 	</aside>
 	
 	<main>
+	<div id="conversations">
 	{% for conversation in conversations %}
+	
 	<div class="messages-wrapper {% if conversationId == conversation.id %}is_active{% else %}hide{% endif %}" chat-id="chat_{{ conversation.id }}" id="chat_{{ conversation.id }}" other-user-id="
 	{% if conversation.first_person == user %}
 		{{ conversation.second_person.id }}
@@ -394,8 +396,10 @@
 		</ul>
 		
 		</div>
+	
 		<div class=" type typing_status"></div>
 		{% endfor %}
+	</div>
 		<footer>
 			<form id="send-message-form">
 				<div class="input-group">

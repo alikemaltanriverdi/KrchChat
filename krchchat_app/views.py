@@ -107,4 +107,8 @@ def apiCreateConversation(request):
     user = data.get('user')
     friend = data.get('friend')
     conversation_id = createConversation(user, friend)
-    return JsonResponse({'conversation_id': conversation_id})
+    print('conversation_id:', conversation_id)  # add debug print statement
+    response_data = {'conversation_id': conversation_id}
+    json_response = JsonResponse(response_data)
+    print('json_response:', json_response)  # add debug print statement
+    return json_response

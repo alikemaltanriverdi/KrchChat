@@ -255,10 +255,11 @@ $('.contact-li').on('click', function (){
 })
 
 $('.friend-li').on('click', function (){
-    
+    $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide');
     let chat_id = $(this).attr('chat-id')
     let friend_id = $(this).attr('friend-id')
-   
+    let friend_name = $(this).attr('id')
+    
     if (chat_id ==""){
         let x = friend_id.split("_")[1]
         let y = loc + 'conversations';
@@ -273,27 +274,51 @@ $('.friend-li').on('click', function (){
             })
           })
           .then(response => {
-            // handle the response
+            console.log('response:', response);
+            return response.json();
+          })
+          .then(data => {
+            console.log('data:', data);
+            conversation_id = data['conversation_id'];
+            $(this).attr({"chat-id":"chat_"+conversation_id});  
+            let main = document.getElementById('conversations');
+            let conversion_dialog = 
+            `<div class="messages-wrapper is_active" chat-id="chat_${ conversation_id}" id="chat_${ conversation_id }" other-user-id="
+            ${x}
+            ">
+                <header>
+                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
+                    <div>
+                        
+                        <h2>Chat with ${friend_name}</h2>
+                       
+                        <h3>0 messages</h3>
+                        
+                    </div>
+                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
+                </header>               
+                <ul id="chat" class="msg_card_body ">
+  
+                </ul>
+                
+                </div>`;
+                $(conversion_dialog).appendTo(main);
           })
           .catch(error => {
-            // handle the error
+            console.error('error:', error);
           });
+          
 
     }
+    else{
+        $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active');
+        var elements = document.getElementsByClassName("msg_card_body");
     
- 
-  
-
-    $('.messages-wrapper.is_active').removeClass('is_active').addClass('hide');
-    $('.messages-wrapper[chat-id='+ chat_id+']').removeClass('hide').addClass('is_active');
-  
-    var elements = document.getElementsByClassName("msg_card_body");
-    
-    for (var i = 0; i < elements.length; i++) {
-        elements[i].scrollTop = elements[i].scrollHeight;
-       
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].scrollTop = elements[i].scrollHeight;
+        
+        }
     }
-    
 
     $('.messages-wrapper[friend-id="' + friend_id +'"]').addClass('is_active')
     
